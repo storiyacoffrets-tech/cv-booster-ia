@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Votre CV est prêt — CV Designer IA</title>
@@ -418,11 +421,15 @@ async function load() {
     if (!res.ok) throw new Error(data.error || "Erreur");
 
     const stored = localStorage.getItem("cvBoosterPendingCV");
-    if (!stored) {
-      showError("Votre CV n'a pas été retrouvé sur cet appareil (paiement bien confirmé). Recommencez la création depuis le même navigateur que celui utilisé pour payer, ou contactez le support.");
+    let cv = null;
+    if (stored) {
+      cv = JSON.parse(stored);
+    } else if (data.backupCV) {
+      cv = data.backupCV;
+    } else {
+      showError("Votre CV n'a pas été retrouvé (paiement bien confirmé). Contactez le support avec cette référence : " + sessionId);
       return;
     }
-    const cv = JSON.parse(stored);
 
     renderCV(cv);
     document.getElementById("loading").style.display = "none";
