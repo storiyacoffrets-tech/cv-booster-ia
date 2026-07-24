@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import Stripe from "stripe";
 import crypto from "crypto";
+import sharp from "sharp";
 
 dotenv.config();
 
@@ -13,36 +14,131 @@ const DOMAIN = process.env.DOMAIN || `http://localhost:${PORT}`;
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_placeholder");
 
 app.use(cors());
-app.use(express.json({ limit: "2mb" }));
+app.use(express.json({ limit: "10mb" })); // photos en base64 = payload plus lourd
 app.use(express.static("public"));
 
-const PRICE_EUR_CENTS = 990; // 9,90€
+const PRICE_EUR_CENTS = 499; // 4,99€
 
 // Stockage temporaire en mémoire (les metadata Stripe sont limitées à 500
-// caractères par champ, donc on garde le CV/l'offre ici et on ne passe
+// caractères par champ, donc on garde le CV complet ici et on ne passe
 // qu'un identifiant court à Stripe). Nettoyage automatique après 2h.
-const pendingSubmissions = new Map();
+const pendingCVs = new Map();
 
-function cleanupOldSubmissions() {
+function cleanupOld() {
   const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
-  for (const [id, entry] of pendingSubmissions) {
-    if (entry.createdAt < twoHoursAgo) pendingSubmissions.delete(id);
+  for (const [id, entry] of pendingCVs) {
+    if (entry.createdAt < twoHoursAgo) pendingCVs.delete(id);
   }
 }
-setInterval(cleanupOldSubmissions, 30 * 60 * 1000);
+setInterval(cleanupOld, 30 * 60 * 1000);
 
-// ---- 1. Créer une session de paiement Stripe ----
-app.post("/api/create-checkout-session", async (req, res) => {
+function isValidCV(cv) {
+  return (
+    cv &&
+    typeof cv.fullName === "string" &&
+    cv.fullName.trim().length > 1 &&
+    typeof cv.jobTitle === "string" &&
+    cv.jobTitle.trim().length > 1
+  );
+}
+
+// ---- 1. Améliorer un texte avec l'IA (gratuit, sans paiement) ----
+app.post("/api/improve-text", async (req, res) => {
   try {
-    const { resume, jobOffer } = req.body;
-    if (!resume || !jobOffer || resume.length < 20 || jobOffer.length < 20) {
-      return res.status(400).json({ error: "CV ou offre d'emploi trop courts / manquants." });
+    const { text, context } = req.body;
+    if (!text || text.trim().length < 5) {
+      return res.status(400).json({ error: "Texte trop court." });
     }
 
-    // On génère un identifiant court et on garde le CV + l'offre en mémoire
-    // côté serveur (les metadata Stripe sont limitées à 500 caractères).
+    const prompt = `Tu es un expert en rédaction de CV et en systèmes ATS (Applicant Tracking System).
+Contexte : ${context || "section d'un CV"}
+Texte original écrit par le candidat :
+---
+${text}
+---
+Réécris ce texte pour qu'il soit :
+1. Percutant et orienté résultats (utilise des verbes d'action)
+2. Concis, sans fioritures
+3. Compatible avec les filtres ATS (mots-clés naturels, pas de jargon inutile)
+4. Honnête : n'invente aucune information non présente dans le texte original
+
+Réponds uniquement avec le texte amélioré, sans commentaire, sans guillemets, sans introduction.`;
+
+    const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 500,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    const data = await aiResponse.json();
+    if (!aiResponse.ok) {
+      console.error("Erreur API Anthropic:", data);
+      return res.status(500).json({ error: "Erreur lors de l'amélioration du texte." });
+    }
+
+    const improvedText = data.content
+      .filter((b) => b.type === "text")
+      .map((b) => b.text)
+      .join("\n")
+      .trim();
+
+    res.json({ improvedText });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
+// ---- 2. Retoucher la photo de profil (gratuit, sans paiement) ----
+app.post("/api/enhance-photo", async (req, res) => {
+  try {
+    const { imageBase64 } = req.body;
+    if (!imageBase64 || typeof imageBase64 !== "string") {
+      return res.status(400).json({ error: "Image manquante." });
+    }
+
+    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+    const inputBuffer = Buffer.from(base64Data, "base64");
+
+    if (inputBuffer.length > 8 * 1024 * 1024) {
+      return res.status(413).json({ error: "Image trop lourde (8 Mo max)." });
+    }
+
+    const outputBuffer = await sharp(inputBuffer)
+      .rotate() // corrige l'orientation EXIF (photos prises au téléphone)
+      .resize(500, 625, { fit: "cover", position: "attention" }) // recadrage portrait intelligent
+      .normalize() // égalise le contraste automatiquement
+      .modulate({ brightness: 1.06, saturation: 1.08 }) // léger boost lumière/couleurs
+      .sharpen({ sigma: 0.6 }) // netteté professionnelle
+      .jpeg({ quality: 90 })
+      .toBuffer();
+
+    const enhancedBase64 = `data:image/jpeg;base64,${outputBuffer.toString("base64")}`;
+    res.json({ enhancedImage: enhancedBase64 });
+  } catch (err) {
+    console.error("Erreur retouche photo:", err);
+    res.status(500).json({ error: "Erreur lors de la retouche de la photo." });
+  }
+});
+
+// ---- 3. Créer une session de paiement Stripe pour débloquer le PDF ----
+app.post("/api/create-checkout-session", async (req, res) => {
+  try {
+    const { cv } = req.body;
+    if (!isValidCV(cv)) {
+      return res.status(400).json({ error: "Données de CV incomplètes (nom et poste requis)." });
+    }
+
     const dataId = crypto.randomUUID();
-    pendingSubmissions.set(dataId, { resume, jobOffer, createdAt: Date.now() });
+    pendingCVs.set(dataId, { cv, createdAt: Date.now() });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -52,8 +148,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
           price_data: {
             currency: "eur",
             product_data: {
-              name: "CV Booster IA - Optimisation ATS",
-              description: "Votre CV réécrit et optimisé pour passer les filtres de recrutement automatiques.",
+              name: "CV Designer IA - Export PDF",
+              description: "Téléchargement de votre CV en PDF haute qualité, sans filigrane.",
             },
             unit_amount: PRICE_EUR_CENTS,
           },
@@ -72,74 +168,26 @@ app.post("/api/create-checkout-session", async (req, res) => {
   }
 });
 
-// ---- 2. Après paiement : vérifier + générer le CV optimisé ----
-app.post("/api/generate", async (req, res) => {
+// ---- 4. Après paiement : renvoyer les données du CV pour le rendu final ----
+app.post("/api/get-cv", async (req, res) => {
   try {
     const { sessionId } = req.body;
     if (!sessionId) return res.status(400).json({ error: "session_id manquant." });
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-
     if (session.payment_status !== "paid") {
       return res.status(402).json({ error: "Paiement non confirmé." });
     }
 
     const { dataId } = session.metadata;
-    const submission = pendingSubmissions.get(dataId);
-
-    if (!submission) {
+    const entry = pendingCVs.get(dataId);
+    if (!entry) {
       return res.status(410).json({
         error: "Données introuvables (session expirée). Contactez le support, votre paiement a bien été reçu.",
       });
     }
 
-    const { resume, jobOffer } = submission;
-
-    const prompt = `Tu es un expert en recrutement et en systèmes ATS (Applicant Tracking System).
-Voici le CV actuel d'un candidat :
----
-${resume}
----
-Voici l'offre d'emploi visée :
----
-${jobOffer}
----
-Réécris ce CV pour qu'il :
-1. Intègre naturellement les mots-clés importants de l'offre (compétences, titre de poste, outils)
-2. Soit structuré de façon lisible par un ATS (pas de tableaux, pas de colonnes complexes)
-3. Mette en avant les expériences les plus pertinentes pour ce poste précis
-4. Reste honnête : n'invente aucune expérience ou compétence non présente dans le CV original
-5. Soit prêt à copier-coller directement
-
-Réponds uniquement avec le CV optimisé, sans commentaire ni introduction.`;
-
-    const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 2000,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-
-    const data = await aiResponse.json();
-
-    if (!aiResponse.ok) {
-      console.error("Erreur API Anthropic:", data);
-      return res.status(500).json({ error: "Erreur lors de la génération du CV." });
-    }
-
-    const optimizedResume = data.content
-      .filter((b) => b.type === "text")
-      .map((b) => b.text)
-      .join("\n");
-
-    res.json({ optimizedResume });
+    res.json({ cv: entry.cv });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erreur serveur." });
@@ -149,5 +197,5 @@ Réponds uniquement avec le CV optimisé, sans commentaire ni introduction.`;
 app.get("/health", (req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
-  console.log(`CV Booster IA lancé sur ${DOMAIN}`);
+  console.log(`CV Designer IA lancé sur ${DOMAIN}`);
 });
