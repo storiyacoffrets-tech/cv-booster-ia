@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Stripe from "stripe";
+import crypto from "crypto";
 import sharp from "sharp";
 
 dotenv.config();
@@ -27,6 +28,19 @@ function isValidCV(cv) {
     cv.jobTitle.trim().length > 1
   );
 }
+
+// Filet de sécurité en plus du localStorage (qui est la source principale) :
+// on garde aussi une copie temporaire en mémoire, utilisée par la page de
+// succès uniquement si le localStorage est vide (autre appareil, navigation
+// privée...). Ne remplace pas le localStorage, s'y ajoute.
+const backupCVs = new Map();
+function cleanupBackups() {
+  const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
+  for (const [id, entry] of backupCVs) {
+    if (entry.createdAt < twoHoursAgo) backupCVs.delete(id);
+  }
+}
+setInterval(cleanupBackups, 30 * 60 * 1000);
 
 // ---- 1. Améliorer un texte avec l'IA (gratuit, sans paiement) ----
 app.post("/api/improve-text", async (req, res) => {
@@ -124,6 +138,9 @@ app.post("/api/create-checkout-session", async (req, res) => {
       return res.status(400).json({ error: "Données de CV incomplètes (nom et poste requis)." });
     }
 
+    const backupId = crypto.randomUUID();
+    backupCVs.set(backupId, { cv, createdAt: Date.now() });
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -142,6 +159,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
       ],
       success_url: `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/builder.html`,
+      metadata: { backupId },
     });
 
     res.json({ url: session.url });
@@ -165,7 +183,13 @@ app.post("/api/verify-payment", async (req, res) => {
       return res.status(402).json({ error: "Paiement non confirmé." });
     }
 
-    res.json({ paid: true });
+    // Le CV vient normalement du localStorage du client. On renvoie aussi la
+    // copie de secours en mémoire si elle existe encore, pour les cas où le
+    // localStorage serait vide côté client (autre appareil, navigation privée).
+    const backupId = session.metadata && session.metadata.backupId;
+    const backup = backupId ? backupCVs.get(backupId) : null;
+
+    res.json({ paid: true, backupCV: backup ? backup.cv : null });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erreur serveur." });
