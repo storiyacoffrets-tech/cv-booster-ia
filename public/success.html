@@ -409,7 +409,7 @@ async function load() {
     return;
   }
   try {
-    const res = await fetch("/api/get-cv", {
+    const res = await fetch("/api/verify-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sessionId }),
@@ -417,10 +417,18 @@ async function load() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Erreur");
 
-    renderCV(data.cv);
+    const stored = localStorage.getItem("cvBoosterPendingCV");
+    if (!stored) {
+      showError("Votre CV n'a pas été retrouvé sur cet appareil (paiement bien confirmé). Recommencez la création depuis le même navigateur que celui utilisé pour payer, ou contactez le support.");
+      return;
+    }
+    const cv = JSON.parse(stored);
+
+    renderCV(cv);
     document.getElementById("loading").style.display = "none";
     document.getElementById("cvPage").style.display = "block";
     document.getElementById("actions").style.display = "flex";
+    localStorage.removeItem("cvBoosterPendingCV");
   } catch (err) {
     showError(err.message);
   }
