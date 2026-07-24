@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Stripe from "stripe";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -17,6 +18,19 @@ app.use(express.static("public"));
 
 const PRICE_EUR_CENTS = 990; // 9,90€
 
+// Stockage temporaire en mémoire (les metadata Stripe sont limitées à 500
+// caractères par champ, donc on garde le CV/l'offre ici et on ne passe
+// qu'un identifiant court à Stripe). Nettoyage automatique après 2h.
+const pendingSubmissions = new Map();
+
+function cleanupOldSubmissions() {
+  const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
+  for (const [id, entry] of pendingSubmissions) {
+    if (entry.createdAt < twoHoursAgo) pendingSubmissions.delete(id);
+  }
+}
+setInterval(cleanupOldSubmissions, 30 * 60 * 1000);
+
 // ---- 1. Créer une session de paiement Stripe ----
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
@@ -25,9 +39,11 @@ app.post("/api/create-checkout-session", async (req, res) => {
       return res.status(400).json({ error: "CV ou offre d'emploi trop courts / manquants." });
     }
 
-    // On stocke temporairement le CV + l'offre dans les metadata Stripe
-    // (limite 500 caractères par champ metadata -> on tronque si besoin,
-    // pour un usage réel on préfèrera stocker en base + un id)
+    // On génère un identifiant court et on garde le CV + l'offre en mémoire
+    // côté serveur (les metadata Stripe sont limitées à 500 caractères).
+    const dataId = crypto.randomUUID();
+    pendingSubmissions.set(dataId, { resume, jobOffer, createdAt: Date.now() });
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -46,10 +62,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
       ],
       success_url: `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/index.html`,
-      metadata: {
-        resume: resume.slice(0, 4900),
-        jobOffer: jobOffer.slice(0, 4900),
-      },
+      metadata: { dataId },
     });
 
     res.json({ url: session.url });
@@ -71,7 +84,16 @@ app.post("/api/generate", async (req, res) => {
       return res.status(402).json({ error: "Paiement non confirmé." });
     }
 
-    const { resume, jobOffer } = session.metadata;
+    const { dataId } = session.metadata;
+    const submission = pendingSubmissions.get(dataId);
+
+    if (!submission) {
+      return res.status(410).json({
+        error: "Données introuvables (session expirée). Contactez le support, votre paiement a bien été reçu.",
+      });
+    }
+
+    const { resume, jobOffer } = submission;
 
     const prompt = `Tu es un expert en recrutement et en systèmes ATS (Applicant Tracking System).
 Voici le CV actuel d'un candidat :
