@@ -126,6 +126,29 @@
   .page.modern .cv-sidebar .cv-section-title::after { background: rgba(255,255,255,0.3); }
   .page.modern .cv-sidebar .cv-skill-tag { background: rgba(255,255,255,0.18); color: white; }
   .page.modern .cv-main { flex: 1; padding: 44px 36px; }
+
+  /* ---- Bandeau layout ---- */
+  .page.bandeau { padding: 0; overflow: hidden; }
+  .page.bandeau .cv-band {
+    background: var(--tpl-accent, var(--accent)); color: white;
+    padding: 32px 40px 22px; display: flex; align-items: center; gap: 18px;
+  }
+  .page.bandeau .cv-band .cv-name { color: white; }
+  .page.bandeau .cv-band .cv-title { color: rgba(255,255,255,0.85); }
+  .page.bandeau .cv-photo { border-radius: 50%; width: 74px; height: 74px; border: 3px solid rgba(255,255,255,0.6); }
+  .page.bandeau .cv-contact { padding: 12px 40px; background: var(--tpl-accent-soft, var(--accent-soft)); margin: 0; }
+  .page.bandeau .cv-contact-item { background: white; }
+  .page.bandeau .cv-band-body { padding: 26px 40px 40px; }
+
+  /* ---- Minimal layout ---- */
+  .page.minimal .cv-name { font-family: var(--tpl-body-font, 'Inter'), sans-serif; font-weight: 700; }
+  .page.minimal .cv-title { color: #555; }
+  .page.minimal .cv-section-title { color: #1a1a1a; }
+  .page.minimal .cv-section-title::before { background: #1a1a1a; }
+  .page.minimal .cv-entry-sub { color: #444; }
+  .page.minimal .tl-dot { background: #1a1a1a; box-shadow: 0 0 0 3px #ececec; }
+  .page.minimal .cv-contact-item { background: transparent; color: #555; padding: 0; }
+  .page.minimal .cv-skill-tag { background: #f2f2f2; color: #333; }
   .cv-header-row { display: flex; align-items: center; gap: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
   .cv-photo {
     width: 88px;
@@ -314,6 +337,38 @@ function buildModernHTML(cv, contact) {
   return sidebar + main;
 }
 
+function buildMinimalHTML(cv, contact) {
+  let html = `<h1 class="cv-name">${escHtml(cv.fullName)}</h1>`;
+  html += `<div class="cv-title">${escHtml(cv.jobTitle)}</div>`;
+  html += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
+  if (cv.summary) html += `<div class="cv-summary">${escHtml(cv.summary)}</div>`;
+  if (cv.experiences && cv.experiences.length) html += `<div class="cv-section-title">Expérience professionnelle</div>${buildExperiencesHTML(cv)}`;
+  if (cv.educations && cv.educations.length) html += `<div class="cv-section-title">Formation</div>${buildEducationsHTML(cv)}`;
+  if (cv.skills) html += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) html += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
+  return html;
+}
+
+function buildBandeauHTML(cv, contact) {
+  let band = `<div class="cv-band">`;
+  if (cv.photoDataUrl) band += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
+  band += `<div>
+    <h1 class="cv-name">${escHtml(cv.fullName)}</h1>
+    <div class="cv-title">${escHtml(cv.jobTitle)}</div>
+  </div></div>`;
+  band += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
+
+  let body = `<div class="cv-band-body">`;
+  if (cv.summary) body += `<div class="cv-summary">${escHtml(cv.summary)}</div>`;
+  if (cv.experiences && cv.experiences.length) body += `<div class="cv-section-title">Expérience professionnelle</div>${buildExperiencesHTML(cv)}`;
+  if (cv.educations && cv.educations.length) body += `<div class="cv-section-title">Formation</div>${buildEducationsHTML(cv)}`;
+  if (cv.skills) body += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) body += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
+  body += `</div>`;
+
+  return band + body;
+}
+
 const COLOR_THEMES = {
   forest: { accent: "#1f5c4e", soft: "#e4efe9" },
   navy: { accent: "#1e3a5f", soft: "#e5ebf1" },
@@ -338,9 +393,10 @@ function renderCV(cv) {
   page.style.setProperty("--tpl-accent-soft", theme.soft);
   page.style.setProperty("--tpl-display-font", `'${font.display}'`);
   page.style.setProperty("--tpl-body-font", `'${font.body}'`);
-  page.classList.toggle("modern", cv.template === "modern");
+  page.className = "page " + cv.template;
 
-  const html = cv.template === "modern" ? buildModernHTML(cv, contact) : buildClassicHTML(cv, contact);
+  const builders = { modern: buildModernHTML, minimal: buildMinimalHTML, bandeau: buildBandeauHTML };
+  const html = (builders[cv.template] || buildClassicHTML)(cv, contact);
   document.getElementById("cvContent").innerHTML = html;
 }
 
