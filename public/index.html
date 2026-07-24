@@ -583,7 +583,7 @@ function renderPreview() {
   const cv = getCV();
   const contact = [cv.city, cv.email, cv.phone].filter(Boolean).join("  ·  ");
 
-  html += `<div class="cv-header-row">`;
+  let html = `<div class="cv-header-row">`;
   if (cv.photoDataUrl) {
     html += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
   }
