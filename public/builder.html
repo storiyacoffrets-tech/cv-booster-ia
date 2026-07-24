@@ -1122,6 +1122,11 @@ payBtn.addEventListener("click", async () => {
   payBtn.textContent = "Redirection vers le paiement...";
 
   try {
+    // On garde le CV dans le navigateur (pas sur le serveur) : il sera relu
+    // sur la page de succès après paiement, sans risque de perte si le
+    // serveur redémarre entre-temps.
+    localStorage.setItem("cvBoosterPendingCV", JSON.stringify(cv));
+
     const res = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
