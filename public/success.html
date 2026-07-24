@@ -3,164 +3,268 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Votre CV optimisé — CV Booster IA</title>
+<title>Votre CV est prêt — CV Designer IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --accent: #22d3ee;
-    --accent-2: #a78bfa;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
+    --ink: #16211c;
+    --ink-soft: #3d4a43;
+    --paper: #f7f3ea;
+    --line: #ded5c2;
+    --accent: #1f5c4e;
+    --accent-soft: #e4efe9;
+    --shadow: 0 20px 45px -20px rgba(22, 33, 28, 0.35);
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: radial-gradient(circle at 20% 0%, #1e293b, var(--bg) 60%);
-    color: var(--text);
-    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
   }
-  main {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 60px 24px;
+  header {
+    text-align: center;
+    padding: 40px 24px 10px;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 12px;
   }
   h1 {
-    font-size: 1.8rem;
-    margin-bottom: 8px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 8px;
   }
-  p.subtitle { color: var(--muted); margin-bottom: 30px; }
-  .card {
-    background: var(--card);
-    border: 1px solid #334155;
-    border-radius: 16px;
-    padding: 28px;
+  header p { color: var(--ink-soft); }
+
+  main {
+    max-width: 700px;
+    margin: 30px auto 60px;
+    padding: 0 24px;
   }
-  #loading { text-align: center; padding: 40px 0; color: var(--muted); }
+
+  #loading { text-align: center; padding: 60px 0; color: var(--ink-soft); }
   .spinner {
     width: 36px; height: 36px;
-    border: 3px solid #334155;
+    border: 3px solid var(--line);
     border-top-color: var(--accent);
     border-radius: 50%;
     margin: 0 auto 16px;
     animation: spin 0.9s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  #result {
-    display: none;
-    white-space: pre-wrap;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    padding: 20px;
-    max-height: 560px;
-    overflow-y: auto;
-  }
-  #actions { display: none; margin-top: 18px; gap: 12px; }
-  button {
-    padding: 12px 20px;
-    border-radius: 10px;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  #downloadBtn { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #0f172a; }
-  #copyBtn { background: #334155; color: var(--text); }
+
   #errorBox {
     display: none;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #fca5a5;
-    padding: 14px 16px;
+    background: rgba(181, 71, 63, 0.12);
+    border: 1px solid #b5473f;
+    color: #7a2a24;
+    padding: 14px 18px;
     border-radius: 10px;
+    text-align: center;
+  }
+
+  #actions {
+    display: none;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  button#downloadBtn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px 26px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  button#downloadBtn:hover { background: #164a3f; }
+
+  .page {
+    background: white;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    box-shadow: var(--shadow);
+    border-radius: 4px;
+    padding: 48px 54px;
+    font-family: 'Inter', sans-serif;
+    color: #1a1a1a;
+  }
+  .cv-header-row { display: flex; align-items: center; gap: 18px; margin-bottom: 4px; }
+  .cv-photo {
+    width: 90px;
+    height: 112px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .cv-name { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; margin: 0; }
+  .cv-title { color: var(--accent); font-size: 1.1rem; font-weight: 600; margin: 3px 0 12px; }
+  .cv-contact { font-size: 0.85rem; color: #555; margin-bottom: 20px; }
+  .cv-summary { font-size: 0.92rem; line-height: 1.55; margin-bottom: 22px; color: #2a2a2a; }
+  .cv-section-title {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent);
+    padding-bottom: 5px;
+    margin: 22px 0 12px;
+  }
+  .cv-entry { margin-bottom: 14px; }
+  .cv-entry-head { display: flex; justify-content: space-between; font-size: 0.92rem; font-weight: 700; }
+  .cv-entry-sub { font-size: 0.85rem; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+  .cv-entry-dates { font-size: 0.82rem; color: #777; font-weight: 500; white-space: nowrap; }
+  .cv-entry-desc { font-size: 0.85rem; line-height: 1.55; color: #333; white-space: pre-line; }
+  .cv-skills { display: flex; flex-wrap: wrap; gap: 7px; }
+  .cv-skill-tag {
+    font-size: 0.78rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.78rem; padding-bottom: 40px; }
+
+  @media print {
+    header, #actions, footer, body > *:not(main) { display: none !important; }
+    body { background: white; }
+    main { margin: 0; padding: 0; max-width: none; }
+    .page { box-shadow: none; padding: 20px 30px; max-width: none; }
   }
 </style>
 </head>
 <body>
-<main>
-  <h1>✅ Paiement confirmé</h1>
-  <p class="subtitle">Génération de votre CV optimisé en cours...</p>
 
-  <div class="card">
-    <div id="loading">
-      <div class="spinner"></div>
-      Notre IA analyse votre CV et l'offre d'emploi (environ 15-20 secondes)...
-    </div>
-    <div id="result"></div>
-    <div id="actions">
-      <button id="downloadBtn">Télécharger en .txt</button>
-      <button id="copyBtn">Copier le texte</button>
-    </div>
-    <div id="errorBox"></div>
+<header>
+  <span class="kicker">✅ Paiement confirmé</span>
+  <h1>Votre CV est prêt</h1>
+  <p>Téléchargez-le en PDF ou imprimez-le directement.</p>
+</header>
+
+<main>
+  <div id="loading">
+    <div class="spinner"></div>
+    Préparation de votre CV...
   </div>
+
+  <div id="actions">
+    <button id="downloadBtn">📄 Télécharger en PDF</button>
+  </div>
+
+  <div class="page" id="cvPage" style="display:none;">
+    <div id="cvContent"></div>
+  </div>
+
+  <div id="errorBox"></div>
 </main>
 
+<footer>CV Designer IA</footer>
+
 <script>
+function escHtml(str) {
+  const d = document.createElement("div");
+  d.textContent = str || "";
+  return d.innerHTML;
+}
+
+function renderCV(cv) {
+  const contact = [cv.city, cv.email, cv.phone].filter(Boolean).join("  ·  ");
+  html += `<div class="cv-header-row">`;
+  if (cv.photoDataUrl) {
+    html += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
+  }
+  html += `<div>
+    <h1 class="cv-name">${escHtml(cv.fullName)}</h1>
+    <div class="cv-title">${escHtml(cv.jobTitle)}</div>
+  </div>`;
+  html += `</div>`;
+  html += `<div class="cv-contact">${escHtml(contact)}</div>`;
+  if (cv.summary) html += `<div class="cv-summary">${escHtml(cv.summary)}</div>`;
+
+  if (cv.experiences && cv.experiences.length) {
+    html += `<div class="cv-section-title">Expérience professionnelle</div>`;
+    cv.experiences.forEach((exp) => {
+      html += `<div class="cv-entry">
+        <div class="cv-entry-head"><span>${escHtml(exp.role)}</span><span class="cv-entry-dates">${escHtml(exp.dates)}</span></div>
+        <div class="cv-entry-sub">${escHtml(exp.company)}</div>
+        <div class="cv-entry-desc">${escHtml(exp.description)}</div>
+      </div>`;
+    });
+  }
+
+  if (cv.educations && cv.educations.length) {
+    html += `<div class="cv-section-title">Formation</div>`;
+    cv.educations.forEach((ed) => {
+      html += `<div class="cv-entry">
+        <div class="cv-entry-head"><span>${escHtml(ed.degree)}</span><span class="cv-entry-dates">${escHtml(ed.dates)}</span></div>
+        <div class="cv-entry-sub">${escHtml(ed.school)}</div>
+      </div>`;
+    });
+  }
+
+  if (cv.skills) {
+    html += `<div class="cv-section-title">Compétences</div>`;
+    html += `<div class="cv-skills">${cv.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => `<span class="cv-skill-tag">${escHtml(s)}</span>`).join("")}</div>`;
+  }
+
+  document.getElementById("cvContent").innerHTML = html;
+}
+
 const params = new URLSearchParams(window.location.search);
 const sessionId = params.get("session_id");
 
-const loadingEl = document.getElementById("loading");
-const resultEl = document.getElementById("result");
-const actionsEl = document.getElementById("actions");
-const errorBox = document.getElementById("errorBox");
-
-async function generate() {
+async function load() {
   if (!sessionId) {
     showError("Session de paiement introuvable.");
     return;
   }
   try {
-    const res = await fetch("/api/generate", {
+    const res = await fetch("/api/get-cv", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sessionId }),
     });
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Erreur");
 
-    if (!res.ok) throw new Error(data.error || "Erreur de génération");
-
-    loadingEl.style.display = "none";
-    resultEl.style.display = "block";
-    resultEl.textContent = data.optimizedResume;
-    actionsEl.style.display = "flex";
+    renderCV(data.cv);
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("cvPage").style.display = "block";
+    document.getElementById("actions").style.display = "flex";
   } catch (err) {
     showError(err.message);
   }
 }
 
 function showError(msg) {
-  loadingEl.style.display = "none";
-  errorBox.style.display = "block";
-  errorBox.textContent = "Erreur : " + msg + ". Contactez-nous, votre paiement a bien été reçu.";
+  document.getElementById("loading").style.display = "none";
+  const box = document.getElementById("errorBox");
+  box.style.display = "block";
+  box.textContent = "Erreur : " + msg;
 }
 
 document.getElementById("downloadBtn").addEventListener("click", () => {
-  const blob = new Blob([resultEl.textContent], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "cv-optimise.txt";
-  a.click();
-  URL.revokeObjectURL(url);
+  window.print();
 });
 
-document.getElementById("copyBtn").addEventListener("click", () => {
-  navigator.clipboard.writeText(resultEl.textContent);
-  const btn = document.getElementById("copyBtn");
-  const original = btn.textContent;
-  btn.textContent = "Copié !";
-  setTimeout(() => (btn.textContent = original), 1500);
-});
-
-generate();
+load();
 </script>
+
 </body>
 </html>
