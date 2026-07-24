@@ -304,9 +304,13 @@
   .page.modern .cv-sidebar .cv-photo { width: 96px; height: 96px; border-radius: 50%; margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.25); }
   .page.modern .cv-sidebar .cv-name { color: white; font-size: 1.3rem; text-align: center; }
   .page.modern .cv-sidebar .cv-title { color: rgba(255,255,255,0.85); text-align: center; font-size: 0.85rem; }
-  .page.modern .cv-sidebar .cv-contact { color: rgba(255,255,255,0.8); text-align: center; font-size: 0.72rem; margin-top: 10px; }
+  .page.modern .cv-sidebar .cv-contact { color: rgba(255,255,255,0.8); text-align: center; font-size: 0.72rem; margin-top: 10px; justify-content: center; }
   .page.modern .cv-sidebar .cv-section-title { color: white; border-bottom-color: rgba(255,255,255,0.5); width: 100%; margin-top: 22px; }
   .page.modern .cv-sidebar .cv-skill-tag { background: rgba(255,255,255,0.18); color: white; }
+  .page.modern .cv-sidebar .cv-lang-name { color: white; }
+  .page.modern .cv-sidebar .cv-lang-level { color: rgba(255,255,255,0.65); }
+  .page.modern .cv-sidebar .cv-lang-bar-track { background: rgba(255,255,255,0.25); }
+  .page.modern .cv-sidebar .cv-lang-bar-fill { background: white; }
   .page.modern .cv-main { flex: 1; padding: 32px 26px; overflow: hidden; }
   .cv-photo {
     width: 78px;
@@ -318,7 +322,19 @@
   }
   .cv-name { font-family: var(--tpl-display-font, 'Fraunces'), serif; font-size: 1.8rem; font-weight: 600; margin: 0; }
   .cv-title { color: var(--tpl-accent, var(--accent)); font-size: 1rem; font-weight: 600; margin: 2px 0 10px; }
-  .cv-contact { font-size: 0.78rem; color: #555; margin-bottom: 18px; }
+  .cv-contact { font-size: 0.78rem; color: #555; margin-bottom: 18px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .cv-contact-item { display: inline-flex; align-items: center; gap: 5px; }
+  .cv-contact-item svg { flex-shrink: 0; opacity: 0.75; }
+  .timeline-entry { display: flex; gap: 10px; }
+  .tl-marker { display: flex; flex-direction: column; align-items: center; width: 10px; flex-shrink: 0; padding-top: 5px; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tpl-accent, var(--accent)); flex-shrink: 0; }
+  .tl-line { flex: 1; width: 2px; background: var(--tpl-accent-soft, var(--accent-soft)); margin-top: 2px; min-height: 14px; }
+  .tl-content { flex: 1; min-width: 0; }
+  .cv-lang-row { margin-bottom: 8px; }
+  .cv-lang-name { font-size: 0.78rem; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 3px; }
+  .cv-lang-level { font-size: 0.68rem; color: #888; font-weight: 500; }
+  .cv-lang-bar-track { height: 4px; background: #ececec; border-radius: 2px; overflow: hidden; }
+  .cv-lang-bar-fill { height: 100%; background: var(--tpl-accent, var(--accent)); border-radius: 2px; }
   .cv-summary { font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px; color: #2a2a2a; }
   .cv-section-title {
     font-size: 0.72rem;
@@ -433,6 +449,13 @@
       </div>
     </div>
 
+    <div class="panel">
+      <h2><span class="step-num">7</span>Langues</h2>
+      <p class="sub">Vos langues et votre niveau</p>
+      <div id="languagesList"></div>
+      <button class="add-btn" id="addLanguage">+ Ajouter une langue</button>
+    </div>
+
     <div class="cta-panel">
       <div class="price">4,99€ <span>· export PDF haute qualité, sans filigrane</span></div>
       <button id="payBtn">Télécharger mon CV en PDF</button>
@@ -455,7 +478,16 @@
 <script>
 let experiences = [{ role: "", company: "", dates: "", description: "" }];
 let educations = [{ degree: "", school: "", dates: "" }];
+let languages = [{ name: "", level: "Avancé" }];
 let photoDataUrl = null;
+
+const LANGUAGE_LEVELS = { "Débutant": 25, "Intermédiaire": 50, "Avancé": 75, "Courant": 90, "Langue maternelle": 100 };
+
+const ICONS = {
+  location: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  email: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>`,
+  phone: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+};
 
 const COLOR_THEMES = {
   forest: { accent: "#1f5c4e", soft: "#e4efe9" },
@@ -710,6 +742,53 @@ function escHtml(str) {
   return d.innerHTML;
 }
 
+function renderLanguages() {
+  const container = document.getElementById("languagesList");
+  container.innerHTML = "";
+  languages.forEach((lang, i) => {
+    const block = el(`
+      <div class="entry-block">
+        ${languages.length > 1 ? `<button class="remove-btn" data-remove-lang="${i}">Supprimer</button>` : ""}
+        <div class="row2">
+          <div class="field"><label>Langue</label><input type="text" data-lang="${i}" data-field="name" value="${escAttr(lang.name)}" placeholder="Anglais"></div>
+          <div class="field">
+            <label>Niveau</label>
+            <select data-lang="${i}" data-field="level" style="width:100%; border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:var(--paper); font-family:'Inter',sans-serif; font-size:0.92rem;">
+              ${Object.keys(LANGUAGE_LEVELS).map((lvl) => `<option value="${lvl}" ${lvl === lang.level ? "selected" : ""}>${lvl}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+      </div>
+    `);
+    container.appendChild(block);
+  });
+  attachLanguageListeners();
+}
+
+function attachLanguageListeners() {
+  document.querySelectorAll("[data-lang]").forEach((inp) => {
+    inp.addEventListener("input", (e) => {
+      const i = e.target.getAttribute("data-lang");
+      const field = e.target.getAttribute("data-field");
+      languages[i][field] = e.target.value;
+      renderPreview();
+    });
+  });
+  document.querySelectorAll("[data-remove-lang]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      languages.splice(e.target.getAttribute("data-remove-lang"), 1);
+      renderLanguages();
+      renderPreview();
+    });
+  });
+}
+
+document.getElementById("addLanguage").addEventListener("click", () => {
+  languages.push({ name: "", level: "Avancé" });
+  renderLanguages();
+  renderPreview();
+});
+
 document.getElementById("addExperience").addEventListener("click", () => {
   experiences.push({ role: "", company: "", dates: "", description: "" });
   renderExperiences();
@@ -735,19 +814,32 @@ function getCV() {
     summary: document.getElementById("summary").value.trim(),
     experiences: experiences.filter((e) => e.role || e.company || e.description),
     educations: educations.filter((e) => e.degree || e.school),
+    languages: languages.filter((l) => l.name),
     skills: document.getElementById("skills").value.trim(),
   };
+}
+
+function buildContactHTML(cv) {
+  const items = [];
+  if (cv.city) items.push(`<span class="cv-contact-item">${ICONS.location}${escHtml(cv.city)}</span>`);
+  if (cv.email) items.push(`<span class="cv-contact-item">${ICONS.email}${escHtml(cv.email)}</span>`);
+  if (cv.phone) items.push(`<span class="cv-contact-item">${ICONS.phone}${escHtml(cv.phone)}</span>`);
+  return items.length ? items.join("") : `<span class="cv-empty">Ville · email · téléphone</span>`;
 }
 
 function buildExperiencesHTML(cv) {
   if (cv.experiences.length === 0) {
     return `<div class="cv-empty">Ajoutez une expérience professionnelle...</div>`;
   }
-  return cv.experiences.map((exp) => `<div class="cv-entry">
-    <div class="cv-entry-head"><span>${escHtml(exp.role) || "Poste"}</span><span class="cv-entry-dates">${escHtml(exp.dates)}</span></div>
-    <div class="cv-entry-sub">${escHtml(exp.company)}</div>
-    <div class="cv-entry-desc">${escHtml(exp.description)}</div>
-  </div>`).join("");
+  return cv.experiences.map((exp, i) => `
+    <div class="timeline-entry">
+      <div class="tl-marker"><div class="tl-dot"></div>${i < cv.experiences.length - 1 ? '<div class="tl-line"></div>' : ""}</div>
+      <div class="tl-content cv-entry">
+        <div class="cv-entry-head"><span>${escHtml(exp.role) || "Poste"}</span><span class="cv-entry-dates">${escHtml(exp.dates)}</span></div>
+        <div class="cv-entry-sub">${escHtml(exp.company)}</div>
+        <div class="cv-entry-desc">${escHtml(exp.description)}</div>
+      </div>
+    </div>`).join("");
 }
 
 function buildEducationsHTML(cv) {
@@ -766,6 +858,15 @@ function buildSkillsHTML(cv) {
     .map((s) => `<span class="cv-skill-tag">${escHtml(s)}</span>`).join("");
 }
 
+function buildLanguagesHTML(cv) {
+  if (!cv.languages || cv.languages.length === 0) return "";
+  return cv.languages.map((lang) => `
+    <div class="cv-lang-row">
+      <div class="cv-lang-name"><span>${escHtml(lang.name)}</span><span class="cv-lang-level">${escHtml(lang.level)}</span></div>
+      <div class="cv-lang-bar-track"><div class="cv-lang-bar-fill" style="width:${LANGUAGE_LEVELS[lang.level] || 60}%"></div></div>
+    </div>`).join("");
+}
+
 function buildClassicHTML(cv, contact) {
   let html = `<div class="cv-header-row">`;
   if (cv.photoDataUrl) html += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
@@ -773,13 +874,14 @@ function buildClassicHTML(cv, contact) {
     <h1 class="cv-name">${escHtml(cv.fullName) || "Votre nom"}</h1>
     <div class="cv-title">${escHtml(cv.jobTitle) || "Titre du poste visé"}</div>
   </div></div>`;
-  html += `<div class="cv-contact">${escHtml(contact) || "Ville · email · téléphone"}</div>`;
+  html += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
   html += cv.summary
     ? `<div class="cv-summary">${escHtml(cv.summary)}</div>`
     : `<div class="cv-summary cv-empty">Votre résumé apparaîtra ici...</div>`;
   html += `<div class="cv-section-title">Expérience professionnelle</div>${buildExperiencesHTML(cv)}`;
   html += `<div class="cv-section-title">Formation</div>${buildEducationsHTML(cv)}`;
   if (cv.skills) html += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) html += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
   return html;
 }
 
@@ -788,8 +890,9 @@ function buildModernHTML(cv, contact) {
   if (cv.photoDataUrl) sidebar += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
   sidebar += `<h1 class="cv-name">${escHtml(cv.fullName) || "Votre nom"}</h1>`;
   sidebar += `<div class="cv-title">${escHtml(cv.jobTitle) || "Titre du poste visé"}</div>`;
-  sidebar += `<div class="cv-contact">${escHtml(contact) || "Ville · email · téléphone"}</div>`;
+  sidebar += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
   if (cv.skills) sidebar += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) sidebar += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
   sidebar += `</div>`;
 
   let main = `<div class="cv-main">`;
@@ -898,6 +1001,7 @@ payBtn.addEventListener("click", async () => {
 renderStylePickers();
 renderExperiences();
 renderEducations();
+renderLanguages();
 renderPreview();
 </script>
 
