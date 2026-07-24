@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Stripe from "stripe";
-import crypto from "crypto";
 import sharp from "sharp";
 
 dotenv.config();
@@ -18,19 +17,6 @@ app.use(express.json({ limit: "10mb" })); // photos en base64 = payload plus lou
 app.use(express.static("public"));
 
 const PRICE_EUR_CENTS = 199; // 1,99€
-
-// Stockage temporaire en mémoire (les metadata Stripe sont limitées à 500
-// caractères par champ, donc on garde le CV complet ici et on ne passe
-// qu'un identifiant court à Stripe). Nettoyage automatique après 2h.
-const pendingCVs = new Map();
-
-function cleanupOld() {
-  const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
-  for (const [id, entry] of pendingCVs) {
-    if (entry.createdAt < twoHoursAgo) pendingCVs.delete(id);
-  }
-}
-setInterval(cleanupOld, 30 * 60 * 1000);
 
 function isValidCV(cv) {
   return (
@@ -130,15 +116,13 @@ app.post("/api/enhance-photo", async (req, res) => {
 });
 
 // ---- 3. Créer une session de paiement Stripe pour débloquer le PDF ----
+// (le CV lui-même reste dans le navigateur du client, voir /api/verify-payment)
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
     const { cv } = req.body;
     if (!isValidCV(cv)) {
       return res.status(400).json({ error: "Données de CV incomplètes (nom et poste requis)." });
     }
-
-    const dataId = crypto.randomUUID();
-    pendingCVs.set(dataId, { cv, createdAt: Date.now() });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -158,7 +142,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
       ],
       success_url: `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/builder.html`,
-      metadata: { dataId },
     });
 
     res.json({ url: session.url });
@@ -168,8 +151,11 @@ app.post("/api/create-checkout-session", async (req, res) => {
   }
 });
 
-// ---- 4. Après paiement : renvoyer les données du CV pour le rendu final ----
-app.post("/api/get-cv", async (req, res) => {
+// ---- 4. Après paiement : confirmer que le paiement est bien passé ----
+// Le contenu du CV n'est jamais stocké côté serveur : il reste dans le
+// navigateur du client (localStorage), ce qui évite toute perte de données
+// si le serveur redémarre entre la création du paiement et son succès.
+app.post("/api/verify-payment", async (req, res) => {
   try {
     const { sessionId } = req.body;
     if (!sessionId) return res.status(400).json({ error: "session_id manquant." });
@@ -179,15 +165,7 @@ app.post("/api/get-cv", async (req, res) => {
       return res.status(402).json({ error: "Paiement non confirmé." });
     }
 
-    const { dataId } = session.metadata;
-    const entry = pendingCVs.get(dataId);
-    if (!entry) {
-      return res.status(410).json({
-        error: "Données introuvables (session expirée). Contactez le support, votre paiement a bien été reçu.",
-      });
-    }
-
-    res.json({ cv: entry.cv });
+    res.json({ paid: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erreur serveur." });
