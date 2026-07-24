@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Votre CV est prêt — CV Designer IA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Lora:wght@400;500;600&family=Poppins:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #16211c;
@@ -98,9 +98,31 @@
     box-shadow: var(--shadow);
     border-radius: 4px;
     padding: 48px 54px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--tpl-body-font, 'Inter'), sans-serif;
     color: #1a1a1a;
   }
+  .page.modern { padding: 0; display: flex; overflow: hidden; }
+  .page.modern .cv-sidebar {
+    width: 34%;
+    background: var(--tpl-accent);
+    color: white;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .page.modern .cv-sidebar .cv-photo { width: 110px; height: 110px; border-radius: 50%; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.25); }
+  .page.modern .cv-sidebar .cv-name { color: white; font-size: 1.5rem; text-align: center; }
+  .page.modern .cv-sidebar .cv-title { color: rgba(255,255,255,0.85); text-align: center; font-size: 0.92rem; }
+  .page.modern .cv-sidebar .cv-contact { color: rgba(255,255,255,0.8); text-align: center; font-size: 0.78rem; margin-top: 12px; justify-content: center; }
+  .page.modern .cv-sidebar .cv-lang-name { color: white; }
+  .page.modern .cv-sidebar .cv-lang-level { color: rgba(255,255,255,0.65); }
+  .page.modern .cv-sidebar .cv-lang-bar-track { background: rgba(255,255,255,0.25); }
+  .page.modern .cv-sidebar .cv-lang-bar-fill { background: white; }
+  .page.modern .cv-sidebar .cv-section-title { color: white; border-bottom-color: rgba(255,255,255,0.5); width: 100%; margin-top: 26px; }
+  .page.modern .cv-sidebar .cv-skill-tag { background: rgba(255,255,255,0.18); color: white; }
+  .page.modern .cv-main { flex: 1; padding: 40px 32px; }
   .cv-header-row { display: flex; align-items: center; gap: 18px; margin-bottom: 4px; }
   .cv-photo {
     width: 90px;
@@ -110,30 +132,42 @@
     flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
-  .cv-name { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; margin: 0; }
-  .cv-title { color: var(--accent); font-size: 1.1rem; font-weight: 600; margin: 3px 0 12px; }
-  .cv-contact { font-size: 0.85rem; color: #555; margin-bottom: 20px; }
+  .cv-name { font-family: var(--tpl-display-font, 'Fraunces'), serif; font-size: 2rem; font-weight: 600; margin: 0; }
+  .cv-title { color: var(--tpl-accent, var(--accent)); font-size: 1.1rem; font-weight: 600; margin: 3px 0 12px; }
+  .cv-contact { font-size: 0.85rem; color: #555; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .cv-contact-item { display: inline-flex; align-items: center; gap: 6px; }
+  .cv-contact-item svg { flex-shrink: 0; opacity: 0.75; }
+  .timeline-entry { display: flex; gap: 12px; }
+  .tl-marker { display: flex; flex-direction: column; align-items: center; width: 10px; flex-shrink: 0; padding-top: 6px; }
+  .tl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tpl-accent, var(--accent)); flex-shrink: 0; }
+  .tl-line { flex: 1; width: 2px; background: var(--tpl-accent-soft, var(--accent-soft)); margin-top: 2px; min-height: 16px; }
+  .tl-content { flex: 1; min-width: 0; }
+  .cv-lang-row { margin-bottom: 10px; }
+  .cv-lang-name { font-size: 0.85rem; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .cv-lang-level { font-size: 0.74rem; color: #888; font-weight: 500; }
+  .cv-lang-bar-track { height: 5px; background: #ececec; border-radius: 3px; overflow: hidden; }
+  .cv-lang-bar-fill { height: 100%; background: var(--tpl-accent, var(--accent)); border-radius: 3px; }
   .cv-summary { font-size: 0.92rem; line-height: 1.55; margin-bottom: 22px; color: #2a2a2a; }
   .cv-section-title {
     font-size: 0.78rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-weight: 700;
-    color: var(--accent);
-    border-bottom: 1.5px solid var(--accent);
+    color: var(--tpl-accent, var(--accent));
+    border-bottom: 1.5px solid var(--tpl-accent, var(--accent));
     padding-bottom: 5px;
     margin: 22px 0 12px;
   }
   .cv-entry { margin-bottom: 14px; }
   .cv-entry-head { display: flex; justify-content: space-between; font-size: 0.92rem; font-weight: 700; }
-  .cv-entry-sub { font-size: 0.85rem; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+  .cv-entry-sub { font-size: 0.85rem; color: var(--tpl-accent, var(--accent)); font-weight: 600; margin-bottom: 4px; }
   .cv-entry-dates { font-size: 0.82rem; color: #777; font-weight: 500; white-space: nowrap; }
   .cv-entry-desc { font-size: 0.85rem; line-height: 1.55; color: #333; white-space: pre-line; }
   .cv-skills { display: flex; flex-wrap: wrap; gap: 7px; }
   .cv-skill-tag {
     font-size: 0.78rem;
-    background: var(--accent-soft);
-    color: var(--accent);
+    background: var(--tpl-accent-soft, var(--accent-soft));
+    color: var(--tpl-accent, var(--accent));
     padding: 4px 12px;
     border-radius: 999px;
     font-weight: 600;
@@ -183,46 +217,120 @@ function escHtml(str) {
   return d.innerHTML;
 }
 
-function renderCV(cv) {
-  const contact = [cv.city, cv.email, cv.phone].filter(Boolean).join("  ·  ");
-  let html = `<div class="cv-header-row">`;
-  if (cv.photoDataUrl) {
-    html += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
-  }
-  html += `<div>
-    <h1 class="cv-name">${escHtml(cv.fullName)}</h1>
-    <div class="cv-title">${escHtml(cv.jobTitle)}</div>
-  </div>`;
-  html += `</div>`;
-  html += `<div class="cv-contact">${escHtml(contact)}</div>`;
-  if (cv.summary) html += `<div class="cv-summary">${escHtml(cv.summary)}</div>`;
+const LANGUAGE_LEVELS = { "Débutant": 25, "Intermédiaire": 50, "Avancé": 75, "Courant": 90, "Langue maternelle": 100 };
 
-  if (cv.experiences && cv.experiences.length) {
-    html += `<div class="cv-section-title">Expérience professionnelle</div>`;
-    cv.experiences.forEach((exp) => {
-      html += `<div class="cv-entry">
+const ICONS = {
+  location: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  email: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>`,
+  phone: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+};
+
+function buildContactHTML(cv) {
+  const items = [];
+  if (cv.city) items.push(`<span class="cv-contact-item">${ICONS.location}${escHtml(cv.city)}</span>`);
+  if (cv.email) items.push(`<span class="cv-contact-item">${ICONS.email}${escHtml(cv.email)}</span>`);
+  if (cv.phone) items.push(`<span class="cv-contact-item">${ICONS.phone}${escHtml(cv.phone)}</span>`);
+  return items.join("");
+}
+
+function buildExperiencesHTML(cv) {
+  if (!cv.experiences || !cv.experiences.length) return "";
+  return cv.experiences.map((exp, i) => `
+    <div class="timeline-entry">
+      <div class="tl-marker"><div class="tl-dot"></div>${i < cv.experiences.length - 1 ? '<div class="tl-line"></div>' : ""}</div>
+      <div class="tl-content cv-entry">
         <div class="cv-entry-head"><span>${escHtml(exp.role)}</span><span class="cv-entry-dates">${escHtml(exp.dates)}</span></div>
         <div class="cv-entry-sub">${escHtml(exp.company)}</div>
         <div class="cv-entry-desc">${escHtml(exp.description)}</div>
-      </div>`;
-    });
-  }
+      </div>
+    </div>`).join("");
+}
 
-  if (cv.educations && cv.educations.length) {
-    html += `<div class="cv-section-title">Formation</div>`;
-    cv.educations.forEach((ed) => {
-      html += `<div class="cv-entry">
-        <div class="cv-entry-head"><span>${escHtml(ed.degree)}</span><span class="cv-entry-dates">${escHtml(ed.dates)}</span></div>
-        <div class="cv-entry-sub">${escHtml(ed.school)}</div>
-      </div>`;
-    });
-  }
+function buildEducationsHTML(cv) {
+  if (!cv.educations || !cv.educations.length) return "";
+  return cv.educations.map((ed) => `<div class="cv-entry">
+    <div class="cv-entry-head"><span>${escHtml(ed.degree)}</span><span class="cv-entry-dates">${escHtml(ed.dates)}</span></div>
+    <div class="cv-entry-sub">${escHtml(ed.school)}</div>
+  </div>`).join("");
+}
 
-  if (cv.skills) {
-    html += `<div class="cv-section-title">Compétences</div>`;
-    html += `<div class="cv-skills">${cv.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => `<span class="cv-skill-tag">${escHtml(s)}</span>`).join("")}</div>`;
-  }
+function buildSkillsHTML(cv) {
+  if (!cv.skills) return "";
+  return cv.skills.split(",").map((s) => s.trim()).filter(Boolean)
+    .map((s) => `<span class="cv-skill-tag">${escHtml(s)}</span>`).join("");
+}
 
+function buildLanguagesHTML(cv) {
+  if (!cv.languages || !cv.languages.length) return "";
+  return cv.languages.map((lang) => `
+    <div class="cv-lang-row">
+      <div class="cv-lang-name"><span>${escHtml(lang.name)}</span><span class="cv-lang-level">${escHtml(lang.level)}</span></div>
+      <div class="cv-lang-bar-track"><div class="cv-lang-bar-fill" style="width:${LANGUAGE_LEVELS[lang.level] || 60}%"></div></div>
+    </div>`).join("");
+}
+
+function buildClassicHTML(cv, contact) {
+  let html = `<div class="cv-header-row">`;
+  if (cv.photoDataUrl) html += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
+  html += `<div>
+    <h1 class="cv-name">${escHtml(cv.fullName)}</h1>
+    <div class="cv-title">${escHtml(cv.jobTitle)}</div>
+  </div></div>`;
+  html += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
+  if (cv.summary) html += `<div class="cv-summary">${escHtml(cv.summary)}</div>`;
+  if (cv.experiences && cv.experiences.length) html += `<div class="cv-section-title">Expérience professionnelle</div>${buildExperiencesHTML(cv)}`;
+  if (cv.educations && cv.educations.length) html += `<div class="cv-section-title">Formation</div>${buildEducationsHTML(cv)}`;
+  if (cv.skills) html += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) html += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
+  return html;
+}
+
+function buildModernHTML(cv, contact) {
+  let sidebar = `<div class="cv-sidebar">`;
+  if (cv.photoDataUrl) sidebar += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
+  sidebar += `<h1 class="cv-name">${escHtml(cv.fullName)}</h1>`;
+  sidebar += `<div class="cv-title">${escHtml(cv.jobTitle)}</div>`;
+  sidebar += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
+  if (cv.skills) sidebar += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) sidebar += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
+  sidebar += `</div>`;
+
+  let main = `<div class="cv-main">`;
+  if (cv.summary) main += `<div class="cv-summary">${escHtml(cv.summary)}</div>`;
+  if (cv.experiences && cv.experiences.length) main += `<div class="cv-section-title">Expérience professionnelle</div>${buildExperiencesHTML(cv)}`;
+  if (cv.educations && cv.educations.length) main += `<div class="cv-section-title">Formation</div>${buildEducationsHTML(cv)}`;
+  main += `</div>`;
+
+  return sidebar + main;
+}
+
+const COLOR_THEMES = {
+  forest: { accent: "#1f5c4e", soft: "#e4efe9" },
+  navy: { accent: "#1e3a5f", soft: "#e5ebf1" },
+  wine: { accent: "#7c2d3b", soft: "#f3e3e6" },
+  charcoal: { accent: "#2b2b2b", soft: "#ececec" },
+  teal: { accent: "#0f6b6b", soft: "#dff0ef" },
+  terracotta: { accent: "#b5573f", soft: "#f5e6e1" },
+};
+const FONT_PAIRINGS = {
+  classique: { display: "Fraunces", body: "Inter" },
+  elegant: { display: "Playfair Display", body: "Lora" },
+  moderne: { display: "Poppins", body: "Inter" },
+  structure: { display: "Space Grotesk", body: "IBM Plex Sans" },
+};
+
+function renderCV(cv) {
+  const contact = [cv.city, cv.email, cv.phone].filter(Boolean).join("  ·  ");
+  const page = document.getElementById("cvPage");
+  const theme = COLOR_THEMES[cv.colorKey] || COLOR_THEMES.forest;
+  const font = FONT_PAIRINGS[cv.fontKey] || FONT_PAIRINGS.classique;
+  page.style.setProperty("--tpl-accent", theme.accent);
+  page.style.setProperty("--tpl-accent-soft", theme.soft);
+  page.style.setProperty("--tpl-display-font", `'${font.display}'`);
+  page.style.setProperty("--tpl-body-font", `'${font.body}'`);
+  page.classList.toggle("modern", cv.template === "modern");
+
+  const html = cv.template === "modern" ? buildModernHTML(cv, contact) : buildClassicHTML(cv, contact);
   document.getElementById("cvContent").innerHTML = html;
 }
 
