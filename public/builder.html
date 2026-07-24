@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CV Designer IA — Créez votre CV professionnel en 5 minutes</title>
@@ -1123,9 +1126,15 @@ payBtn.addEventListener("click", async () => {
 
   try {
     // On garde le CV dans le navigateur (pas sur le serveur) : il sera relu
-    // sur la page de succès après paiement, sans risque de perte si le
-    // serveur redémarre entre-temps.
-    localStorage.setItem("cvBoosterPendingCV", JSON.stringify(cv));
+    // sur la page de succès après paiement. On vérifie que ça a bien
+    // fonctionné AVANT d'envoyer le client vers le paiement, pour ne jamais
+    // facturer quelqu'un sans pouvoir lui donner son CV ensuite.
+    const cvJson = JSON.stringify(cv);
+    localStorage.setItem("cvBoosterPendingCV", cvJson);
+    const verify = localStorage.getItem("cvBoosterPendingCV");
+    if (verify !== cvJson) {
+      throw new Error("Impossible de sauvegarder votre CV dans ce navigateur (stockage local désactivé ou plein). Essayez avec un autre navigateur ou désactivez la navigation privée.");
+    }
 
     const res = await fetch("/api/create-checkout-session", {
       method: "POST",
