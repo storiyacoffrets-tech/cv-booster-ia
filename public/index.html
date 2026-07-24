@@ -3,709 +3,684 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CV Designer IA — Créez votre CV professionnel en 5 minutes</title>
+<title>CV Designer IA — Créez un CV professionnel parmi 48 modèles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Lora:wght@400;500;600&family=Poppins:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #16211c;
-    --ink-soft: #3d4a43;
+    --ink: #10151c;
+    --ink-2: #1a222c;
+    --gold: #c9a24b;
+    --gold-soft: rgba(201, 162, 75, 0.14);
     --paper: #f7f3ea;
     --paper-card: #ffffff;
     --line: #ded5c2;
+    --text: #16211c;
+    --text-soft: #3d4a43;
     --accent: #1f5c4e;
     --accent-soft: #e4efe9;
-    --stamp: #9c3b3b;
-    --shadow: 0 20px 45px -20px rgba(22, 33, 28, 0.35);
+    --shadow: 0 24px 50px -20px rgba(16, 21, 28, 0.35);
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-  }
-  .display { font-family: 'Fraunces', serif; }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--paper); color: var(--text); }
+  a { text-decoration: none; color: inherit; }
+  img { max-width: 100%; }
 
-  header {
-    padding: 40px 28px 24px;
-    text-align: center;
-    max-width: 720px;
-    margin: 0 auto;
-  }
-  .kicker {
-    display: inline-block;
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-weight: 600;
-    margin-bottom: 14px;
-    border-bottom: 1px solid var(--accent);
-    padding-bottom: 4px;
-  }
-  h1.display {
-    font-size: 2.5rem;
-    font-weight: 600;
-    line-height: 1.15;
-    margin: 0 0 12px;
-  }
-  header p {
-    color: var(--ink-soft);
-    font-size: 1.05rem;
-    max-width: 520px;
-    margin: 0 auto;
-    line-height: 1.5;
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
   }
 
-  .workspace {
-    max-width: 1320px;
-    margin: 20px auto 80px;
-    padding: 0 24px;
-    display: grid;
-    grid-template-columns: minmax(340px, 460px) 1fr;
-    gap: 32px;
-    align-items: start;
-  }
-  @media (max-width: 980px) {
-    .workspace { grid-template-columns: 1fr; }
-  }
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
 
-  .panel {
-    background: var(--paper-card);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 28px;
+  /* ---- Nav ---- */
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 32px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 5;
   }
-  .panel + .panel { margin-top: 20px; }
-  .panel h2 {
-    font-family: 'Fraunces', serif;
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin: 0 0 4px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .logo { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.2rem; color: var(--text); }
+  .nav-cta {
+    background: var(--gold); color: var(--ink); padding: 10px 20px;
+    border-radius: 999px; font-weight: 700; font-size: 0.85rem;
   }
-  .panel .step-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-  }
-  .panel .sub { color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 18px 34px; }
+  .nav-cta:hover { background: #d9b562; }
 
-  label {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--ink-soft);
-    margin-bottom: 6px;
-  }
-  .field { margin-bottom: 14px; }
-  input[type="text"], input[type="email"], input[type="tel"], textarea {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.92rem;
-    color: var(--ink);
-    background: var(--paper);
-  }
-  textarea { resize: vertical; min-height: 70px; line-height: 1.45; }
-  input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; background: white; }
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  .entry-block {
-    border: 1px dashed var(--line);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 14px;
-    position: relative;
-  }
-  .entry-block .remove-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: #b5473f;
-    font-size: 0.78rem;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .add-btn {
-    width: 100%;
-    padding: 10px;
-    border: 1px dashed var(--accent);
-    border-radius: 8px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-  }
-  .add-btn:hover { background: #d8e9e1; }
-
-  .improve-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    border-radius: 999px;
-    padding: 5px 12px;
-    font-size: 0.76rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 6px;
-  }
-  .improve-btn:hover { background: var(--accent-soft); }
-  .improve-btn:disabled { opacity: 0.5; cursor: wait; }
-
-  .cta-panel {
-    position: sticky;
-    bottom: 20px;
-    background: var(--ink);
-    border-radius: 14px;
-    padding: 20px 24px;
-    color: white;
-    box-shadow: var(--shadow);
-    margin-top: 20px;
-  }
-  .cta-panel .price { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 600; }
-  .cta-panel .price span { font-size: 0.95rem; color: #c8d3cd; font-weight: 400; }
-  #payBtn {
-    width: 100%;
-    margin-top: 12px;
-    padding: 15px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-  }
-  #payBtn:hover { background: #164a3f; }
-  #payBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-  #errorBox {
-    display: none;
-    background: rgba(181, 71, 63, 0.15);
-    border: 1px solid #b5473f;
-    color: #7a2a24;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    margin-top: 10px;
-  }
-
-  .preview-wrap { position: sticky; top: 20px; }
-  .preview-label {
-    font-size: 0.8rem;
-    color: var(--ink-soft);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .page {
-    background: white;
-    width: 100%;
-    max-width: 620px;
-    aspect-ratio: 210 / 297;
-    margin: 0 auto;
-    box-shadow: var(--shadow);
-    border-radius: 4px;
-    padding: 44px 48px;
-    position: relative;
+  /* ---- Hero (dark, premium) ---- */
+  .hero-section {
+    background:
+      radial-gradient(circle at 12% 15%, rgba(31,92,78,0.14), transparent 50%),
+      radial-gradient(circle at 88% 10%, rgba(201,162,75,0.22), transparent 45%),
+      radial-gradient(circle at 70% 90%, rgba(31,92,78,0.08), transparent 55%),
+      var(--paper);
+    color: var(--text);
+    padding-bottom: 90px;
     overflow: hidden;
-    font-family: 'Inter', sans-serif;
-    color: #1a1a1a;
+    position: relative;
   }
-  .stamp {
-    position: absolute;
-    top: 40px;
-    right: -54px;
-    width: 220px;
-    text-align: center;
-    transform: rotate(28deg);
-    border: 3px solid var(--stamp);
-    color: var(--stamp);
-    font-family: 'Fraunces', serif;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    font-size: 0.95rem;
-    padding: 6px 0;
-    opacity: 0.55;
+  .hero-section::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.5), transparent 60%);
     pointer-events: none;
   }
-  .cv-header-row { display: flex; align-items: center; gap: 16px; margin-bottom: 4px; }
-  .cv-photo {
-    width: 78px;
-    height: 96px;
-    object-fit: cover;
-    border-radius: 8px;
-    flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  .hero-grid {
+    max-width: 1200px; margin: 0 auto; padding: 30px 32px 0;
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px; align-items: center;
   }
-  .cv-name { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 600; margin: 0; }
-  .cv-title { color: var(--accent); font-size: 1rem; font-weight: 600; margin: 2px 0 10px; }
-  .cv-contact { font-size: 0.78rem; color: #555; margin-bottom: 18px; }
-  .cv-summary { font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px; color: #2a2a2a; }
-  .cv-section-title {
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 700;
-    color: var(--accent);
-    border-bottom: 1.5px solid var(--accent);
-    padding-bottom: 4px;
-    margin: 18px 0 10px;
-  }
-  .cv-entry { margin-bottom: 12px; }
-  .cv-entry-head { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; }
-  .cv-entry-sub { font-size: 0.78rem; color: var(--accent); font-weight: 600; margin-bottom: 3px; }
-  .cv-entry-dates { font-size: 0.75rem; color: #777; font-weight: 500; white-space: nowrap; }
-  .cv-entry-desc { font-size: 0.78rem; line-height: 1.5; color: #333; white-space: pre-line; }
-  .cv-skills { display: flex; flex-wrap: wrap; gap: 6px; }
-  .cv-skill-tag {
-    font-size: 0.72rem;
-    background: var(--accent-soft);
-    color: var(--accent);
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-weight: 600;
-  }
-  .cv-empty { color: #aaa; font-style: italic; font-size: 0.8rem; }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
 
-  footer { text-align: center; color: var(--ink-soft); font-size: 0.78rem; padding-bottom: 40px; }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.76rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold); font-weight: 700; margin-bottom: 20px;
+    border: 1px solid rgba(201,162,75,0.4); padding: 6px 14px; border-radius: 999px;
+    background: var(--gold-soft);
+  }
+  h1 {
+    font-family: 'Fraunces', serif; font-size: 3.1rem; font-weight: 600; line-height: 1.08; margin: 0 0 20px;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .hero-copy p { font-size: 1.1rem; color: var(--text-soft); max-width: 480px; line-height: 1.6; margin: 0 0 32px; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .btn-primary {
+    background: var(--gold); color: var(--ink); padding: 16px 30px; border-radius: 10px;
+    font-weight: 700; font-size: 1.02rem;
+  }
+  .btn-primary:hover { background: #d9b562; }
+  .btn-ghost {
+    border: 1px solid var(--line); padding: 16px 26px; border-radius: 10px;
+    font-weight: 600; color: var(--text); background: rgba(255,255,255,0.5);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-note { font-size: 0.8rem; color: var(--text-soft); }
+
+  /* ---- Interactive tilting CV card ---- */
+  .hero-stage { perspective: 1200px; display: flex; justify-content: center; }
+  .hero-card {
+    width: 300px; background: white; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid rgba(222,213,194,0.6);
+    padding: 26px 24px; color: var(--text); transform: rotateX(6deg) rotateY(-10deg);
+    transition: transform 0.15s ease-out;
+    position: relative;
+  }
+  .hero-card .hc-row { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+  .hero-card .hc-avatar { width: 42px; height: 52px; border-radius: 6px; background: var(--accent); flex-shrink: 0; }
+  .hero-card .hc-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.05rem; }
+  .hero-card .hc-title { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+  .hero-card .hc-bar { height: 4px; background: var(--accent); border-radius: 2px; width: 34%; margin: 14px 0 8px; }
+  .hero-card .hc-line { height: 4px; background: #ececec; border-radius: 2px; margin-bottom: 6px; }
+  .hero-card .hc-badge {
+    position: absolute; top: -14px; right: -18px; background: var(--gold); color: var(--ink);
+    font-size: 0.7rem; font-weight: 700; padding: 7px 12px; border-radius: 8px; box-shadow: var(--shadow);
+    animation: float 3.5s ease-in-out infinite;
+  }
+  .hero-card .hc-badge2 {
+    position: absolute; bottom: -16px; left: -22px; background: white; color: var(--accent);
+    font-size: 0.7rem; font-weight: 700; padding: 8px 12px; border-radius: 8px; box-shadow: var(--shadow);
+    animation: float 4s ease-in-out infinite 0.6s;
+  }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  /* ---- Stats block (animated) ---- */
+  .stats-section { max-width: 1080px; margin: -50px auto 70px; padding: 0 24px; position: relative; z-index: 4; }
+  .stats-card {
+    background: var(--paper-card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: var(--shadow); padding: 44px 32px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center;
+  }
+  @media (max-width: 780px) { .stats-card { grid-template-columns: repeat(2, 1fr); } }
+  .stat .stat-num { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 600; color: var(--accent); }
+  .stat .stat-lab { font-size: 0.82rem; color: var(--text-soft); margin-top: 4px; line-height: 1.4; }
+  .stats-foot { text-align: center; font-size: 0.74rem; color: #9a9186; margin-top: 22px; }
+
+  /* ---- How it works (interactive steps) ---- */
+  .steps-wrap { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 40px; align-items: center; }
+  @media (max-width: 860px) { .steps-wrap { grid-template-columns: 1fr; } }
+  .step-list { display: flex; flex-direction: column; gap: 10px; }
+  .step-item {
+    display: flex; gap: 16px; align-items: flex-start; padding: 16px 18px; border-radius: 12px;
+    border: 1px solid transparent; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .step-item:hover { background: var(--paper-card); }
+  .step-item.active { background: var(--paper-card); border-color: var(--line); box-shadow: var(--shadow); }
+  .step-num-badge {
+    width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem; flex-shrink: 0; background: var(--line); color: var(--text-soft);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .step-item.active .step-num-badge { background: var(--accent); color: white; }
+  .step-item h3 { margin: 4px 0 4px; font-size: 1rem; font-family: 'Fraunces', serif; font-weight: 600; }
+  .step-item p { margin: 0; font-size: 0.85rem; color: var(--text-soft); line-height: 1.5; display: none; }
+  .step-item.active p { display: block; }
+
+  .step-stage {
+    background: var(--paper-card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: var(--shadow); padding: 32px; min-height: 340px; display: flex; align-items: center; justify-content: center;
+  }
+  .step-visual { width: 100%; max-width: 320px; }
+  .sv-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .sv-dot { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; }
+  .sv-line { height: 9px; border-radius: 4px; background: #ececec; }
+  .sv-card { border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .sv-swatches { display: flex; gap: 8px; margin-top: 10px; }
+  .sv-swatch { width: 22px; height: 22px; border-radius: 50%; }
+  .sv-btn { margin-top: 14px; background: var(--accent); color: white; text-align: center; padding: 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; }
+  .sv-sparkle { font-size: 1.4rem; margin-bottom: 10px; }
+  .sv-check { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--accent); font-weight: 700; margin-top: 10px; }
+
+
+  /* ---- Section shared ---- */
+  .section { max-width: 1160px; margin: 0 auto; padding: 60px 24px; }
+  .section-head { text-align: center; margin-bottom: 36px; }
+  .section-head h2 { font-family: 'Fraunces', serif; font-size: 2.1rem; font-weight: 600; margin: 0 0 10px; }
+  .section-head p { color: var(--text-soft); max-width: 520px; margin: 0 auto; }
+
+  /* ---- Recommended templates ---- */
+  .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; margin-bottom: 30px; }
+  .tpl-card {
+    background: var(--paper-card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px; transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .tpl-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--accent); }
+  .tpl-thumb {
+    background: white; border: 1px solid var(--line); border-radius: 6px; height: 160px;
+    display: flex; overflow: hidden; margin-bottom: 10px;
+  }
+  .tpl-thumb.classic { flex-direction: column; padding: 12px 10px; }
+  .tpl-thumb.classic .row1 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .tpl-thumb.classic .avatar { width: 24px; height: 30px; border-radius: 3px; flex-shrink: 0; }
+  .tpl-thumb.classic .lines div { height: 4px; border-radius: 2px; background: #e3e3e3; margin-bottom: 4px; }
+  .tpl-thumb.classic .lines .name { width: 70px; }
+  .tpl-thumb.classic .bar { height: 3px; border-radius: 2px; margin: 8px 0 5px; width: 100%; }
+  .tpl-thumb.classic .txt div { height: 3px; background: #ececec; border-radius: 2px; margin-bottom: 4px; }
+  .tpl-thumb.modern .side { width: 34%; }
+  .tpl-thumb.modern .main { flex: 1; padding: 12px 10px; }
+  .tpl-thumb.modern .main .bar { height: 3px; border-radius: 2px; margin-bottom: 6px; width: 60%; }
+  .tpl-thumb.modern .main .txt div { height: 3px; background: #ececec; border-radius: 2px; margin-bottom: 4px; }
+  .tpl-thumb.modern .side .circle { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.85); margin: 16px auto 8px; }
+  .tpl-thumb.modern .side .sline { height: 3px; background: rgba(255,255,255,0.5); border-radius: 2px; margin: 0 10px 4px; }
+  .tpl-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 2px; }
+  .tpl-sub { font-size: 0.72rem; color: var(--text-soft); margin-bottom: 10px; }
+  .tpl-use {
+    display: block; text-align: center; background: var(--accent-soft); color: var(--accent);
+    padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 700;
+  }
+  .tpl-use:hover { background: var(--accent); color: white; }
+  .see-all-wrap { text-align: center; }
+  .btn-outline {
+    display: inline-block; border: 1px solid var(--line); padding: 13px 26px; border-radius: 10px;
+    font-weight: 700; font-size: 0.9rem; color: var(--text); background: var(--paper-card);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  #fullGallery { display: none; margin-top: 30px; }
+  #fullGallery.open { display: block; }
+  .filters { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+  .filter-btn {
+    border: 1px solid var(--line); background: var(--paper-card); padding: 8px 16px;
+    border-radius: 999px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-soft);
+  }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* ---- Testimonials ---- */
+  .testimonial-section { background: var(--ink); color: white; }
+  .testimonial-section .section-head h2 { color: white; }
+  .testimonial-section .section-head p { color: rgba(255,255,255,0.6); }
+  .testi-badge {
+    display: inline-block; font-size: 0.7rem; color: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 999px; margin-top: 6px;
+  }
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 860px) { .testi-grid { grid-template-columns: 1fr; } }
+  .testi-card {
+    background: var(--ink-2); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 26px;
+  }
+  .testi-stars { color: var(--gold); letter-spacing: 2px; margin-bottom: 14px; font-size: 0.95rem; }
+  .testi-text { font-size: 0.92rem; line-height: 1.6; color: rgba(255,255,255,0.85); margin-bottom: 20px; }
+  .testi-person { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 600; color: var(--ink); font-size: 0.95rem;
+  }
+  .testi-name { font-weight: 700; font-size: 0.88rem; }
+  .testi-role { font-size: 0.76rem; color: rgba(255,255,255,0.5); }
+
+  /* ---- Final CTA ---- */
+  .final-cta {
+    max-width: 1160px; margin: 0 auto 70px; padding: 0 24px;
+  }
+  .final-cta-inner {
+    background: linear-gradient(120deg, #1f5c4e, #16443a);
+    border-radius: 22px; padding: 60px 40px; text-align: center; color: white;
+    position: relative; overflow: hidden;
+  }
+  .final-cta-inner::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(201,162,75,0.25), transparent 55%);
+  }
+  .final-cta-inner h2 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 600; margin: 0 0 14px; position: relative; }
+  .final-cta-inner p { color: rgba(255,255,255,0.85); max-width: 460px; margin: 0 auto 28px; position: relative; }
+  .final-cta-inner .btn-primary { position: relative; }
+
+  footer { text-align: center; color: var(--text-soft); font-size: 0.8rem; padding: 20px 24px 50px; }
 </style>
 </head>
 <body>
 
-<header>
-  <span class="kicker">CV Designer IA</span>
-  <h1 class="display">Un CV qui a l'air d'avoir coûté cher à faire</h1>
-  <p>Remplissez le formulaire, regardez votre CV prendre forme en direct, laissez l'IA polir vos formulations, puis téléchargez le PDF final.</p>
-</header>
+<div class="hero-section">
+<nav>
+  <div class="logo">CV Designer IA</div>
+  <a class="nav-cta" href="builder.html">Créer mon CV</a>
+</nav>
 
-<div class="workspace">
-
-  <div>
-    <div class="panel">
-      <h2><span class="step-num">1</span>Vos informations</h2>
-      <p class="sub">La base de votre CV</p>
-      <div class="field"><label>Nom complet</label><input type="text" id="fullName" placeholder="Claire Martin"></div>
-      <div class="field"><label>Poste visé / titre professionnel</label><input type="text" id="jobTitle" placeholder="Chargée de clientèle"></div>
-      <div class="row2">
-        <div class="field"><label>Email</label><input type="email" id="email" placeholder="claire.martin@email.com"></div>
-        <div class="field"><label>Téléphone</label><input type="tel" id="phone" placeholder="06 12 34 56 78"></div>
-      </div>
-      <div class="field"><label>Ville</label><input type="text" id="city" placeholder="Lyon"></div>
-      <div class="field">
-        <label>Résumé / accroche (2-3 phrases)</label>
-        <textarea id="summary" placeholder="Décrivez votre profil en quelques phrases..."></textarea>
-        <button class="improve-btn" data-improve="summary" data-context="Résumé / accroche de CV">✨ Améliorer avec l'IA</button>
-      </div>
+<div class="hero-grid">
+  <div class="hero-copy">
+    <span class="kicker">✨ Retouche photo IA incluse · 4,99€ seulement</span>
+    <h1>Un CV <em>professionnel</em>,<br>votre style, en 5 minutes</h1>
+    <p>Choisissez parmi 48 modèles, personnalisez couleurs et polices en un clic, laissez l'IA améliorer vos textes et retoucher votre photo, puis téléchargez en PDF.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="builder.html">Créer mon CV gratuitement</a>
+      <a class="btn-ghost" href="#modeles">Voir les modèles</a>
     </div>
-
-    <div class="panel">
-      <h2><span class="step-num">2</span>Photo de profil <span style="font-weight:400;font-size:0.7rem;color:var(--ink-soft);">(optionnel)</span></h2>
-      <p class="sub">L'IA recadre, corrige la lumière et le contraste automatiquement</p>
-      <div class="field">
-        <input type="file" id="photoInput" accept="image/*">
-      </div>
-      <div id="photoStatus" style="font-size:0.8rem;color:var(--ink-soft);margin-top:6px;"></div>
-      <button class="improve-btn" id="enhancePhotoBtn" style="display:none;">✨ Retoucher ma photo avec l'IA</button>
-    </div>
-
-    <div class="panel">
-      <h2><span class="step-num">3</span>Expériences professionnelles</h2>
-      <p class="sub">Vos postes, du plus récent au plus ancien</p>
-      <div id="experiencesList"></div>
-      <button class="add-btn" id="addExperience">+ Ajouter une expérience</button>
-    </div>
-
-    <div class="panel">
-      <h2><span class="step-num">4</span>Formation</h2>
-      <p class="sub">Vos diplômes</p>
-      <div id="educationsList"></div>
-      <button class="add-btn" id="addEducation">+ Ajouter une formation</button>
-    </div>
-
-    <div class="panel">
-      <h2><span class="step-num">5</span>Compétences</h2>
-      <p class="sub">Séparez-les par des virgules</p>
-      <div class="field">
-        <textarea id="skills" placeholder="Excel, gestion de projet, relation client, anglais courant"></textarea>
-      </div>
-    </div>
-
-    <div class="cta-panel">
-      <div class="price">4,99€ <span>· export PDF haute qualité, sans filigrane</span></div>
-      <button id="payBtn">Télécharger mon CV en PDF</button>
-      <div id="errorBox"></div>
-    </div>
+    <div class="hero-note">Aucune inscription requise · vous ne payez qu'au téléchargement</div>
   </div>
 
-  <div class="preview-wrap">
-    <div class="preview-label"><span>Aperçu en direct</span><span>Format A4</span></div>
-    <div class="page" id="cvPage">
-      <div class="stamp">APERÇU</div>
-      <div id="cvContent"></div>
+  <div class="hero-stage">
+    <div class="hero-card" id="heroCard">
+      <div class="hc-badge">✨ Amélioré par l'IA</div>
+      <div class="hc-row">
+        <div class="hc-avatar"></div>
+        <div>
+          <div class="hc-name">Camille Dubois</div>
+          <div class="hc-title">Cheffe de projet marketing</div>
+        </div>
+      </div>
+      <div class="hc-bar"></div>
+      <div class="hc-line" style="width:92%"></div>
+      <div class="hc-line" style="width:78%"></div>
+      <div class="hc-line" style="width:85%"></div>
+      <div class="hc-bar" style="width:28%; margin-top:14px;"></div>
+      <div class="hc-line" style="width:70%"></div>
+      <div class="hc-line" style="width:55%"></div>
+      <div class="hc-badge2">PDF prêt ✓</div>
     </div>
   </div>
-
+</div>
 </div>
 
-<footer>CV Designer IA · Contenu généré avec votre aide, à relire avant envoi</footer>
+<div class="stats-section reveal">
+  <div class="stats-card">
+    <div class="stat">
+      <div class="stat-num" data-count="250" data-suffix="+">0</div>
+      <div class="stat-lab">candidatures reçues en moyenne pour une offre d'emploi</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="7" data-suffix="s">0</div>
+      <div class="stat-lab">temps de lecture moyen d'un CV lors d'un premier tri</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="75" data-suffix="%">0</div>
+      <div class="stat-lab">de CV filtrés par un logiciel avant d'être vus par un humain</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="48" data-suffix="">0</div>
+      <div class="stat-lab">modèles personnalisables disponibles ici</div>
+    </div>
+  </div>
+  <div class="stats-foot">Chiffres couramment cités dans la presse RH et le recrutement, donnés à titre indicatif.</div>
+</div>
+
+<div class="section" id="comment-ca-marche">
+  <div class="section-head reveal">
+    <h2>Comment ça marche</h2>
+    <p>Quatre étapes, cinq minutes, aucune compétence en design requise</p>
+  </div>
+  <div class="steps-wrap reveal">
+    <div class="step-list" id="stepList"></div>
+    <div class="step-stage" id="stepStage"></div>
+  </div>
+</div>
+
+<div class="section" id="modeles">
+  <div class="section-head reveal">
+    <h2>Nos modèles les plus utilisés</h2>
+    <p>6 styles pour commencer — ou explorez les 48 combinaisons possibles de mise en page, couleur et police.</p>
+  </div>
+  <div class="tpl-grid reveal" id="recommendedGrid"></div>
+  <div class="see-all-wrap reveal">
+    <button class="btn-outline" id="toggleGalleryBtn">Voir les 48 modèles</button>
+  </div>
+
+  <div id="fullGallery">
+    <div class="filters" id="filters"></div>
+    <div class="tpl-grid" id="galleryGrid"></div>
+  </div>
+</div>
+
+<div class="testimonial-section">
+  <div class="section">
+    <div class="section-head reveal">
+      <h2>Ce que nos utilisateurs recherchent</h2>
+      <p>Des retours représentatifs des besoins de nos utilisateurs</p>
+      <span class="testi-badge">Exemples illustratifs</span>
+    </div>
+    <div class="testi-grid reveal" id="testiGrid"></div>
+  </div>
+</div>
+
+<div class="final-cta reveal">
+  <div class="final-cta-inner">
+    <h2>Votre prochain poste commence par un bon CV</h2>
+    <p>Créez le vôtre maintenant, gratuitement. Vous ne payez que si vous êtes satisfait du résultat.</p>
+    <a class="btn-primary" href="builder.html">Créer mon CV gratuitement</a>
+  </div>
+</div>
+
+<footer>CV Designer IA · Créez, personnalisez, téléchargez</footer>
 
 <script>
-let experiences = [{ role: "", company: "", dates: "", description: "" }];
-let educations = [{ degree: "", school: "", dates: "" }];
-let photoDataUrl = null; // photo retouchée, envoyée avec le CV
+const LAYOUTS = [
+  { key: "classic", label: "Classique" },
+  { key: "modern", label: "Moderne" },
+];
+const COLORS = [
+  { key: "forest", label: "Forêt", hex: "#1f5c4e" },
+  { key: "navy", label: "Marine", hex: "#1e3a5f" },
+  { key: "wine", label: "Bordeaux", hex: "#7c2d3b" },
+  { key: "charcoal", label: "Charbon", hex: "#2b2b2b" },
+  { key: "teal", label: "Émeraude", hex: "#0f6b6b" },
+  { key: "terracotta", label: "Terracotta", hex: "#b5573f" },
+];
+const FONTS = [
+  { key: "classique", label: "Classique", display: "Fraunces" },
+  { key: "elegant", label: "Élégant", display: "Playfair Display" },
+  { key: "moderne", label: "Moderne", display: "Poppins" },
+  { key: "structure", label: "Structuré", display: "Space Grotesk" },
+];
 
-// Redimensionne une image côté navigateur avant envoi (évite les uploads trop lourds)
-function resizeImageFile(file, maxDim = 900) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > height && width > maxDim) {
-          height = Math.round((height * maxDim) / width);
-          width = maxDim;
-        } else if (height > maxDim) {
-          width = Math.round((width * maxDim) / height);
-          height = maxDim;
-        }
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", 0.9));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-document.getElementById("photoInput").addEventListener("change", async (e) => {
-  const file = e.target.files[0];
-  const statusEl = document.getElementById("photoStatus");
-  const enhanceBtn = document.getElementById("enhancePhotoBtn");
-  if (!file) return;
-
-  statusEl.textContent = "Chargement de la photo...";
-  try {
-    const resized = await resizeImageFile(file);
-    photoDataUrl = resized;
-    statusEl.textContent = "Photo ajoutée. Cliquez ci-dessous pour la retoucher.";
-    enhanceBtn.style.display = "inline-flex";
-    renderPreview();
-  } catch (err) {
-    statusEl.textContent = "Erreur lors du chargement de la photo.";
-  }
-});
-
-document.getElementById("enhancePhotoBtn").addEventListener("click", async (e) => {
-  if (!photoDataUrl) return;
-  const btn = e.target;
-  const statusEl = document.getElementById("photoStatus");
-  btn.disabled = true;
-  const original = btn.textContent;
-  btn.textContent = "Retouche en cours...";
-  try {
-    const res = await fetch("/api/enhance-photo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageBase64: photoDataUrl }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Erreur");
-    photoDataUrl = data.enhancedImage;
-    statusEl.textContent = "✅ Photo retouchée (recadrage, lumière, contraste ajustés).";
-    renderPreview();
-  } catch (err) {
-    statusEl.textContent = "Erreur lors de la retouche : " + err.message;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = original;
-  }
-});
-
-function el(html) {
-  const t = document.createElement("template");
-  t.innerHTML = html.trim();
-  return t.content.firstChild;
-}
-
-function renderExperiences() {
-  const container = document.getElementById("experiencesList");
-  container.innerHTML = "";
-  experiences.forEach((exp, i) => {
-    const block = el(`
-      <div class="entry-block">
-        ${experiences.length > 1 ? `<button class="remove-btn" data-remove-exp="${i}">Supprimer</button>` : ""}
-        <div class="field"><label>Poste</label><input type="text" data-exp="${i}" data-field="role" value="${escAttr(exp.role)}" placeholder="Conseillère clientèle"></div>
-        <div class="row2">
-          <div class="field"><label>Entreprise</label><input type="text" data-exp="${i}" data-field="company" value="${escAttr(exp.company)}" placeholder="Société Générale"></div>
-          <div class="field"><label>Période</label><input type="text" data-exp="${i}" data-field="dates" value="${escAttr(exp.dates)}" placeholder="2020 - présent"></div>
-        </div>
-        <div class="field">
-          <label>Description (une ligne par mission)</label>
-          <textarea data-exp="${i}" data-field="description" placeholder="Gestion d'un portefeuille de 200 clients&#10;Développement du chiffre d'affaires">${exp.description}</textarea>
-          <button class="improve-btn" data-improve-exp="${i}">✨ Améliorer avec l'IA</button>
-        </div>
-      </div>
-    `);
-    container.appendChild(block);
-  });
-  attachExperienceListeners();
-}
-
-function renderEducations() {
-  const container = document.getElementById("educationsList");
-  container.innerHTML = "";
-  educations.forEach((ed, i) => {
-    const block = el(`
-      <div class="entry-block">
-        ${educations.length > 1 ? `<button class="remove-btn" data-remove-edu="${i}">Supprimer</button>` : ""}
-        <div class="field"><label>Diplôme</label><input type="text" data-edu="${i}" data-field="degree" value="${escAttr(ed.degree)}" placeholder="Licence Pro Commerce"></div>
-        <div class="row2">
-          <div class="field"><label>École</label><input type="text" data-edu="${i}" data-field="school" value="${escAttr(ed.school)}" placeholder="École de Commerce"></div>
-          <div class="field"><label>Année</label><input type="text" data-edu="${i}" data-field="dates" value="${escAttr(ed.dates)}" placeholder="2020"></div>
-        </div>
-      </div>
-    `);
-    container.appendChild(block);
-  });
-  attachEducationListeners();
-}
-
-function attachExperienceListeners() {
-  document.querySelectorAll("[data-exp]").forEach((inp) => {
-    inp.addEventListener("input", (e) => {
-      const i = e.target.getAttribute("data-exp");
-      const field = e.target.getAttribute("data-field");
-      experiences[i][field] = e.target.value;
-      renderPreview();
-    });
-  });
-  document.querySelectorAll("[data-remove-exp]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      experiences.splice(e.target.getAttribute("data-remove-exp"), 1);
-      renderExperiences();
-      renderPreview();
-    });
-  });
-  document.querySelectorAll("[data-improve-exp]").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      const i = e.target.getAttribute("data-improve-exp");
-      await improveField(e.target, experiences[i].description, "Description d'une expérience professionnelle sur un CV", (val) => {
-        experiences[i].description = val;
-        renderExperiences();
-        renderPreview();
+const TEMPLATES = [];
+LAYOUTS.forEach((layout) => {
+  COLORS.forEach((color) => {
+    FONTS.forEach((font) => {
+      TEMPLATES.push({
+        id: `${layout.key}-${color.key}-${font.key}`,
+        layout, color, font,
+        name: `${color.label} ${font.label}`,
+        sub: `${layout.label} · ${font.display}`,
       });
     });
   });
-}
-
-function attachEducationListeners() {
-  document.querySelectorAll("[data-edu]").forEach((inp) => {
-    inp.addEventListener("input", (e) => {
-      const i = e.target.getAttribute("data-edu");
-      const field = e.target.getAttribute("data-field");
-      educations[i][field] = e.target.value;
-      renderPreview();
-    });
-  });
-  document.querySelectorAll("[data-remove-edu]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      educations.splice(e.target.getAttribute("data-remove-edu"), 1);
-      renderEducations();
-      renderPreview();
-    });
-  });
-}
-
-function escAttr(str) {
-  return (str || "").replace(/"/g, "&quot;");
-}
-function escHtml(str) {
-  const d = document.createElement("div");
-  d.textContent = str || "";
-  return d.innerHTML;
-}
-
-document.getElementById("addExperience").addEventListener("click", () => {
-  experiences.push({ role: "", company: "", dates: "", description: "" });
-  renderExperiences();
-  renderPreview();
-});
-document.getElementById("addEducation").addEventListener("click", () => {
-  educations.push({ degree: "", school: "", dates: "" });
-  renderEducations();
-  renderPreview();
 });
 
-function getCV() {
-  return {
-    photoDataUrl: photoDataUrl,
-    fullName: document.getElementById("fullName").value.trim(),
-    jobTitle: document.getElementById("jobTitle").value.trim(),
-    email: document.getElementById("email").value.trim(),
-    phone: document.getElementById("phone").value.trim(),
-    city: document.getElementById("city").value.trim(),
-    summary: document.getElementById("summary").value.trim(),
-    experiences: experiences.filter((e) => e.role || e.company || e.description),
-    educations: educations.filter((e) => e.degree || e.school),
-    skills: document.getElementById("skills").value.trim(),
-  };
-}
+const RECOMMENDED_IDS = [
+  "classic-forest-classique",
+  "modern-navy-elegant",
+  "classic-wine-structure",
+  "modern-charcoal-moderne",
+  "classic-teal-elegant",
+  "modern-terracotta-classique",
+];
 
-function renderPreview() {
-  const cv = getCV();
-  const contact = [cv.city, cv.email, cv.phone].filter(Boolean).join("  ·  ");
-
-  let html = `<div class="cv-header-row">`;
-  if (cv.photoDataUrl) {
-    html += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
-  }
-  html += `<div>
-    <h1 class="cv-name">${escHtml(cv.fullName) || "Votre nom"}</h1>
-    <div class="cv-title">${escHtml(cv.jobTitle) || "Titre du poste visé"}</div>
-  </div>`;
-  html += `</div>`;
-  html += `<div class="cv-contact">${escHtml(contact) || "Ville · email · téléphone"}</div>`;
-  html += cv.summary
-    ? `<div class="cv-summary">${escHtml(cv.summary)}</div>`
-    : `<div class="cv-summary cv-empty">Votre résumé apparaîtra ici...</div>`;
-
-  html += `<div class="cv-section-title">Expérience professionnelle</div>`;
-  if (cv.experiences.length === 0) {
-    html += `<div class="cv-empty">Ajoutez une expérience professionnelle...</div>`;
-  } else {
-    cv.experiences.forEach((exp) => {
-      html += `<div class="cv-entry">
-        <div class="cv-entry-head"><span>${escHtml(exp.role) || "Poste"}</span><span class="cv-entry-dates">${escHtml(exp.dates)}</span></div>
-        <div class="cv-entry-sub">${escHtml(exp.company)}</div>
-        <div class="cv-entry-desc">${escHtml(exp.description)}</div>
+function thumbHTML(tpl) {
+  if (tpl.layout.key === "classic") {
+    return `
+      <div class="tpl-thumb classic">
+        <div class="row1">
+          <div class="avatar" style="background:${tpl.color.hex}"></div>
+          <div class="lines"><div class="name" style="background:#999"></div><div style="width:50px;"></div></div>
+        </div>
+        <div class="bar" style="background:${tpl.color.hex}; width:40%;"></div>
+        <div class="txt"><div style="width:90%"></div><div style="width:75%"></div><div style="width:85%"></div></div>
+        <div class="bar" style="background:${tpl.color.hex}; width:35%; margin-top:8px;"></div>
+        <div class="txt"><div style="width:80%"></div><div style="width:60%"></div></div>
       </div>`;
-    });
   }
-
-  html += `<div class="cv-section-title">Formation</div>`;
-  if (cv.educations.length === 0) {
-    html += `<div class="cv-empty">Ajoutez une formation...</div>`;
-  } else {
-    cv.educations.forEach((ed) => {
-      html += `<div class="cv-entry">
-        <div class="cv-entry-head"><span>${escHtml(ed.degree) || "Diplôme"}</span><span class="cv-entry-dates">${escHtml(ed.dates)}</span></div>
-        <div class="cv-entry-sub">${escHtml(ed.school)}</div>
-      </div>`;
-    });
-  }
-
-  if (cv.skills) {
-    html += `<div class="cv-section-title">Compétences</div>`;
-    html += `<div class="cv-skills">${cv.skills.split(",").map((s) => s.trim()).filter(Boolean).map((s) => `<span class="cv-skill-tag">${escHtml(s)}</span>`).join("")}</div>`;
-  }
-
-  document.getElementById("cvContent").innerHTML = html;
+  return `
+    <div class="tpl-thumb modern">
+      <div class="side" style="background:${tpl.color.hex}">
+        <div class="circle"></div>
+        <div class="sline" style="width:60%;margin-left:auto;margin-right:auto;"></div>
+        <div class="sline" style="width:40%;margin-left:auto;margin-right:auto;"></div>
+      </div>
+      <div class="main">
+        <div class="bar" style="background:${tpl.color.hex}"></div>
+        <div class="txt"><div style="width:90%"></div><div style="width:70%"></div><div style="width:80%"></div></div>
+        <div class="bar" style="background:${tpl.color.hex}; width:40%; margin-top:8px;"></div>
+        <div class="txt"><div style="width:75%"></div></div>
+      </div>
+    </div>`;
 }
 
-async function improveField(button, currentText, context, onResult) {
-  if (!currentText || currentText.trim().length < 5) {
-    alert("Écrivez d'abord quelques mots, puis laissez l'IA les améliorer.");
-    return;
-  }
-  const original = button.textContent;
-  button.disabled = true;
-  button.textContent = "Amélioration en cours...";
-  try {
-    const res = await fetch("/api/improve-text", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: currentText, context }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Erreur");
-    onResult(data.improvedText);
-  } catch (err) {
-    alert("Erreur lors de l'amélioration : " + err.message);
-  } finally {
-    button.disabled = false;
-    button.textContent = original;
-  }
+function cardHTML(tpl) {
+  return `
+    <div class="tpl-card">
+      ${thumbHTML(tpl)}
+      <div class="tpl-name" style="font-family:'${tpl.font.display}', serif;">${tpl.name}</div>
+      <div class="tpl-sub">${tpl.sub}</div>
+      <a class="tpl-use" href="builder.html?layout=${tpl.layout.key}&color=${tpl.color.key}&font=${tpl.font.key}">Utiliser ce modèle</a>
+    </div>`;
 }
 
-document.querySelector('[data-improve="summary"]').addEventListener("click", async (e) => {
-  const textarea = document.getElementById("summary");
-  await improveField(e.target, textarea.value, e.target.getAttribute("data-context"), (val) => {
-    textarea.value = val;
-    renderPreview();
+document.getElementById("recommendedGrid").innerHTML = RECOMMENDED_IDS
+  .map((id) => TEMPLATES.find((t) => t.id === id))
+  .filter(Boolean)
+  .map(cardHTML)
+  .join("");
+
+let activeFilter = "all";
+function renderFilters() {
+  const filtersEl = document.getElementById("filters");
+  const options = [{ key: "all", label: "Tous (48)" }, ...LAYOUTS.map((l) => ({ key: l.key, label: l.label }))];
+  filtersEl.innerHTML = "";
+  options.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn" + (opt.key === activeFilter ? " active" : "");
+    btn.textContent = opt.label;
+    btn.addEventListener("click", () => {
+      activeFilter = opt.key;
+      renderFilters();
+      renderGallery();
+    });
+    filtersEl.appendChild(btn);
   });
+}
+function renderGallery() {
+  const grid = document.getElementById("galleryGrid");
+  const list = activeFilter === "all" ? TEMPLATES : TEMPLATES.filter((t) => t.layout.key === activeFilter);
+  grid.innerHTML = list.map(cardHTML).join("");
+}
+renderFilters();
+renderGallery();
+
+const toggleBtn = document.getElementById("toggleGalleryBtn");
+const fullGallery = document.getElementById("fullGallery");
+toggleBtn.addEventListener("click", () => {
+  const isOpen = fullGallery.classList.toggle("open");
+  toggleBtn.textContent = isOpen ? "Masquer les modèles" : "Voir les 48 modèles";
+  if (isOpen) fullGallery.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
-document.querySelectorAll("#fullName, #jobTitle, #email, #phone, #city, #summary, #skills").forEach((f) => {
-  f.addEventListener("input", renderPreview);
-});
+// ---- Avis (exemples illustratifs, à remplacer par de vrais avis) ----
+const TESTIMONIALS = [
+  {
+    name: "Camille D.",
+    role: "Cheffe de projet marketing",
+    initials: "CD",
+    color: "#1f5c4e",
+    stars: 5,
+    text: "J'ai testé trois modèles différents en quelques minutes avant de trouver celui qui me correspondait. La retouche photo a fait toute la différence.",
+  },
+  {
+    name: "Yanis B.",
+    role: "Jeune diplômé, recherche d'alternance",
+    initials: "YB",
+    color: "#1e3a5f",
+    stars: 5,
+    text: "Je ne savais pas comment présenter mon manque d'expérience. Les suggestions IA sur mon résumé m'ont vraiment aidé à mieux me vendre.",
+  },
+  {
+    name: "Sophie L.",
+    role: "Reconversion professionnelle",
+    initials: "SL",
+    color: "#7c2d3b",
+    stars: 4,
+    text: "Simple et rapide, sans les 15 étapes habituelles. Le PDF est net, propre, et j'ai pu l'envoyer le jour même.",
+  },
+];
+document.getElementById("testiGrid").innerHTML = TESTIMONIALS.map((t) => `
+  <div class="testi-card">
+    <div class="testi-stars">${"★".repeat(t.stars)}${"☆".repeat(5 - t.stars)}</div>
+    <div class="testi-text">« ${t.text} »</div>
+    <div class="testi-person">
+      <div class="testi-avatar" style="background:${t.color}">${t.initials}</div>
+      <div>
+        <div class="testi-name">${t.name}</div>
+        <div class="testi-role">${t.role}</div>
+      </div>
+    </div>
+  </div>
+`).join("");
 
-const payBtn = document.getElementById("payBtn");
-const errorBox = document.getElementById("errorBox");
+// ---- Comment ça marche (étapes interactives) ----
+const STEPS = [
+  {
+    title: "Choisissez votre style",
+    text: "Mise en page, couleur d'accent, police : 48 combinaisons possibles, modifiables à tout moment.",
+    visual: `
+      <div class="step-visual">
+        <div class="sv-row"><div class="sv-dot" style="background:#1f5c4e"></div><div class="sv-dot" style="background:#1e3a5f"></div><div class="sv-dot" style="background:#7c2d3b"></div><div class="sv-dot" style="background:#0f6b6b"></div></div>
+        <div class="sv-card">
+          <div class="sv-line" style="width:60%; margin-bottom:8px;"></div>
+          <div class="sv-line" style="width:40%;"></div>
+          <div class="sv-swatches">
+            <div class="sv-swatch" style="background:#1f5c4e"></div>
+            <div class="sv-swatch" style="background:#7c2d3b"></div>
+            <div class="sv-swatch" style="background:#1e3a5f"></div>
+            <div class="sv-swatch" style="background:#0f6b6b"></div>
+          </div>
+        </div>
+      </div>`,
+  },
+  {
+    title: "Remplissez vos informations",
+    text: "Coordonnées, expériences, formation, compétences : un formulaire guidé, avec l'aperçu qui se met à jour en direct.",
+    visual: `
+      <div class="step-visual">
+        <div class="sv-card">
+          <div class="sv-row"><div class="sv-dot" style="background:#e4efe9"></div><div style="flex:1"><div class="sv-line" style="width:70%; margin-bottom:6px;"></div><div class="sv-line" style="width:45%;"></div></div></div>
+          <div class="sv-line" style="width:90%; margin-top:14px;"></div>
+          <div class="sv-line" style="width:80%; margin-top:8px;"></div>
+          <div class="sv-line" style="width:85%; margin-top:8px;"></div>
+        </div>
+      </div>`,
+  },
+  {
+    title: "Laissez l'IA améliorer vos textes et votre photo",
+    text: "Un bouton pour reformuler vos phrases de façon percutante, un autre pour recadrer et retoucher votre photo automatiquement.",
+    visual: `
+      <div class="step-visual" style="text-align:center;">
+        <div class="sv-sparkle">✨</div>
+        <div class="sv-card">
+          <div class="sv-line" style="width:95%; margin-bottom:8px;"></div>
+          <div class="sv-line" style="width:88%; margin-bottom:8px;"></div>
+          <div class="sv-line" style="width:70%;"></div>
+        </div>
+        <div class="sv-check">✓ Texte amélioré avec l'IA</div>
+      </div>`,
+  },
+  {
+    title: "Téléchargez votre CV en PDF",
+    text: "4,99€, paiement unique, sans abonnement. Votre CV est prêt à envoyer immédiatement.",
+    visual: `
+      <div class="step-visual" style="text-align:center;">
+        <div class="sv-card">
+          <div class="sv-row" style="justify-content:center;"><div class="sv-dot" style="background:#1f5c4e"></div></div>
+          <div class="sv-line" style="width:60%; margin:12px auto 0;"></div>
+        </div>
+        <div class="sv-btn">📄 Télécharger en PDF</div>
+      </div>`,
+  },
+];
 
-payBtn.addEventListener("click", async () => {
-  const cv = getCV();
-  errorBox.style.display = "none";
+let activeStep = 0;
 
-  if (!cv.fullName || !cv.jobTitle) {
-    errorBox.textContent = "Merci de renseigner au moins votre nom et le poste visé.";
-    errorBox.style.display = "block";
-    return;
-  }
-
-  payBtn.disabled = true;
-  payBtn.textContent = "Redirection vers le paiement...";
-
-  try {
-    const res = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cv }),
+function renderSteps() {
+  const list = document.getElementById("stepList");
+  list.innerHTML = STEPS.map((s, i) => `
+    <div class="step-item ${i === activeStep ? "active" : ""}" data-step="${i}">
+      <div class="step-num-badge">${i + 1}</div>
+      <div>
+        <h3>${s.title}</h3>
+        <p>${s.text}</p>
+      </div>
+    </div>
+  `).join("");
+  document.querySelectorAll(".step-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      activeStep = parseInt(item.getAttribute("data-step"), 10);
+      renderSteps();
+      renderStepStage();
     });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      throw new Error(data.error || "Erreur inconnue");
+  });
+}
+
+function renderStepStage() {
+  document.getElementById("stepStage").innerHTML = STEPS[activeStep].visual;
+}
+
+renderSteps();
+renderStepStage();
+
+let stepAutoPlay = setInterval(() => {
+  activeStep = (activeStep + 1) % STEPS.length;
+  renderSteps();
+  renderStepStage();
+}, 4500);
+document.getElementById("stepList").addEventListener("click", () => clearInterval(stepAutoPlay));
+
+// ---- Comment ça marche (étapes interactives) fin ----
+const heroCard = document.getElementById("heroCard");
+const heroStage = document.querySelector(".hero-stage");
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches === false) {
+  heroStage.addEventListener("mousemove", (e) => {
+    const rect = heroStage.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    heroCard.style.transform = `rotateX(${(-y * 16 + 6).toFixed(2)}deg) rotateY(${(x * 20 - 10).toFixed(2)}deg)`;
+  });
+  heroStage.addEventListener("mouseleave", () => {
+    heroCard.style.transform = "rotateX(6deg) rotateY(-10deg)";
+  });
+}
+
+// ---- Compteurs animés au scroll ----
+function animateCount(el) {
+  const target = parseFloat(el.getAttribute("data-count"));
+  const suffix = el.getAttribute("data-suffix") || "";
+  const duration = 1200;
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(target * eased) + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ---- Reveal + compteurs au scroll ----
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("in-view");
+      if (entry.target.classList.contains("stats-section")) {
+        document.querySelectorAll(".stat-num").forEach(animateCount);
+      }
+      observer.unobserve(entry.target);
     }
-  } catch (err) {
-    errorBox.textContent = "Une erreur est survenue : " + err.message;
-    errorBox.style.display = "block";
-    payBtn.disabled = false;
-    payBtn.textContent = "Télécharger mon CV en PDF";
-  }
-});
+  });
+}, { threshold: 0.25 });
 
-renderExperiences();
-renderEducations();
-renderPreview();
+document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 </script>
 
 </body>
