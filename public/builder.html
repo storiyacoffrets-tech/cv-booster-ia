@@ -311,57 +311,65 @@
   .page.modern .cv-sidebar .cv-lang-level { color: rgba(255,255,255,0.65); }
   .page.modern .cv-sidebar .cv-lang-bar-track { background: rgba(255,255,255,0.25); }
   .page.modern .cv-sidebar .cv-lang-bar-fill { background: white; }
-  .page.modern .cv-main { flex: 1; padding: 32px 26px; overflow: hidden; }
+  .page.modern .cv-main { flex: 1; padding: 38px 32px; overflow: hidden; }
   .cv-photo {
-    width: 78px;
-    height: 96px;
+    width: 76px;
+    height: 94px;
     object-fit: cover;
     border-radius: 8px;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    border: 3px solid white;
+    outline: 1px solid rgba(0,0,0,0.06);
   }
-  .cv-name { font-family: var(--tpl-display-font, 'Fraunces'), serif; font-size: 1.8rem; font-weight: 600; margin: 0; }
-  .cv-title { color: var(--tpl-accent, var(--accent)); font-size: 1rem; font-weight: 600; margin: 2px 0 10px; }
-  .cv-contact { font-size: 0.78rem; color: #555; margin-bottom: 18px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
-  .cv-contact-item { display: inline-flex; align-items: center; gap: 5px; }
-  .cv-contact-item svg { flex-shrink: 0; opacity: 0.75; }
-  .timeline-entry { display: flex; gap: 10px; }
+  .cv-name { font-family: var(--tpl-display-font, 'Fraunces'), serif; font-size: 1.85rem; font-weight: 600; margin: 0; letter-spacing: -0.01em; line-height: 1.15; }
+  .cv-title { color: var(--tpl-accent, var(--accent)); font-size: 0.95rem; font-weight: 600; margin: 4px 0 12px; letter-spacing: 0.01em; }
+  .cv-header-row { display: flex; align-items: center; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .cv-contact { font-size: 0.72rem; color: #555; margin-bottom: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; }
+  .cv-contact-item {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--tpl-accent-soft, var(--accent-soft)); color: var(--tpl-accent, var(--accent));
+    padding: 3px 9px; border-radius: 999px; font-weight: 600;
+  }
+  .cv-contact-item svg { flex-shrink: 0; opacity: 0.9; }
+  .timeline-entry { display: flex; gap: 12px; }
   .tl-marker { display: flex; flex-direction: column; align-items: center; width: 10px; flex-shrink: 0; padding-top: 5px; }
-  .tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tpl-accent, var(--accent)); flex-shrink: 0; }
-  .tl-line { flex: 1; width: 2px; background: var(--tpl-accent-soft, var(--accent-soft)); margin-top: 2px; min-height: 14px; }
-  .tl-content { flex: 1; min-width: 0; }
-  .cv-lang-row { margin-bottom: 8px; }
-  .cv-lang-name { font-size: 0.78rem; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 3px; }
-  .cv-lang-level { font-size: 0.68rem; color: #888; font-weight: 500; }
-  .cv-lang-bar-track { height: 4px; background: #ececec; border-radius: 2px; overflow: hidden; }
-  .cv-lang-bar-fill { height: 100%; background: var(--tpl-accent, var(--accent)); border-radius: 2px; }
-  .cv-summary { font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px; color: #2a2a2a; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tpl-accent, var(--accent)); flex-shrink: 0; box-shadow: 0 0 0 3px var(--tpl-accent-soft, var(--accent-soft)); }
+  .tl-line { flex: 1; width: 1.5px; background: var(--line); margin-top: 4px; min-height: 16px; }
+  .tl-content { flex: 1; min-width: 0; padding-bottom: 4px; }
+  .cv-lang-row { margin-bottom: 10px; }
+  .cv-lang-name { font-size: 0.78rem; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .cv-lang-level { font-size: 0.66rem; color: #888; font-weight: 500; }
+  .cv-lang-bar-track { height: 4px; background: #ececec; border-radius: 3px; overflow: hidden; }
+  .cv-lang-bar-fill { height: 100%; background: var(--tpl-accent, var(--accent)); border-radius: 3px; }
+  .cv-summary { font-size: 0.84rem; line-height: 1.6; margin-bottom: 6px; color: #2e2e2e; }
   .cv-section-title {
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     font-weight: 700;
     color: var(--tpl-accent, var(--accent));
-    border-bottom: 1.5px solid var(--tpl-accent, var(--accent));
-    padding-bottom: 4px;
-    margin: 18px 0 10px;
+    display: flex; align-items: center; gap: 8px;
+    margin: 26px 0 14px;
   }
-  .cv-entry { margin-bottom: 12px; }
-  .cv-entry-head { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; }
-  .cv-entry-sub { font-size: 0.78rem; color: var(--tpl-accent, var(--accent)); font-weight: 600; margin-bottom: 3px; }
-  .cv-entry-dates { font-size: 0.75rem; color: #777; font-weight: 500; white-space: nowrap; }
-  .cv-entry-desc { font-size: 0.78rem; line-height: 1.5; color: #333; white-space: pre-line; }
-  .cv-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cv-section-title::before { content: ""; width: 14px; height: 3px; border-radius: 2px; background: var(--tpl-accent, var(--accent)); flex-shrink: 0; }
+  .cv-section-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .cv-entry { margin-bottom: 16px; }
+  .cv-entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 0.86rem; font-weight: 700; }
+  .cv-entry-sub { font-size: 0.76rem; color: var(--tpl-accent, var(--accent)); font-weight: 600; margin: 2px 0 5px; }
+  .cv-entry-dates { font-size: 0.72rem; color: #888; font-weight: 500; white-space: nowrap; }
+  .cv-entry-desc { font-size: 0.78rem; line-height: 1.6; color: #383838; white-space: pre-line; }
+  .cv-skills { display: flex; flex-wrap: wrap; gap: 7px; }
   .cv-skill-tag {
-    font-size: 0.72rem;
+    font-size: 0.71rem;
     background: var(--tpl-accent-soft, var(--accent-soft));
     color: var(--tpl-accent, var(--accent));
-    padding: 3px 10px;
+    padding: 4px 11px;
     border-radius: 999px;
     font-weight: 600;
   }
   .cv-empty { color: #aaa; font-style: italic; font-size: 0.8rem; }
-  .page { font-family: var(--tpl-body-font, 'Inter'), sans-serif; }
+  .page { font-family: var(--tpl-body-font, 'Inter'), sans-serif; padding: 46px 50px; }
 
   footer { text-align: center; color: var(--ink-soft); font-size: 0.78rem; padding-bottom: 40px; }
 </style>
