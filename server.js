@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json({ limit: "10mb" })); // photos en base64 = payload plus lourd
 app.use(express.static("public"));
 
-const PRICE_EUR_CENTS = 499; // 4,99€
+const PRICE_EUR_CENTS = 199; // 1,99€
 
 // Stockage temporaire en mémoire (les metadata Stripe sont limitées à 500
 // caractères par champ, donc on garde le CV complet ici et on ne passe
@@ -157,7 +157,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
         },
       ],
       success_url: `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${DOMAIN}/index.html`,
+      cancel_url: `${DOMAIN}/builder.html`,
       metadata: { dataId },
     });
 
