@@ -269,7 +269,7 @@
     font-size: 0.95rem;
   }
   .font-option.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-  .layout-row { display: flex; gap: 12px; }
+  .layout-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .layout-option {
     flex: 1;
     border: 2px solid var(--line);
@@ -287,6 +287,13 @@
   .layout-thumb.modern .side { width: 32%; background: var(--accent); }
   .layout-thumb.modern .main { flex: 1; padding: 6px 8px; }
   .layout-thumb.modern .main div { height: 5px; background: #e5e5e5; margin-bottom: 4px; border-radius: 2px; }
+  .layout-thumb.minimal .bar { width: 100%; padding-top: 4px; }
+  .layout-thumb.minimal .bar div:first-child { height: 10px; background: #333; margin: 4px 8px 6px; border-radius: 1px; width: 60%; }
+  .layout-thumb.minimal .bar div:not(:first-child) { height: 3px; background: #e8e8e8; margin: 5px 8px; border-radius: 1px; }
+  .layout-thumb.bandeau { flex-direction: column; }
+  .layout-thumb.bandeau .band { height: 20px; background: var(--accent); flex-shrink: 0; }
+  .layout-thumb.bandeau .bar { padding: 6px 8px; }
+  .layout-thumb.bandeau .bar div { height: 4px; background: #e5e5e5; margin-bottom: 4px; border-radius: 2px; }
   .layout-option span { font-size: 0.8rem; font-weight: 600; }
 
   /* ---- Modern template (sidebar) ---- */
@@ -312,6 +319,29 @@
   .page.modern .cv-sidebar .cv-lang-bar-track { background: rgba(255,255,255,0.25); }
   .page.modern .cv-sidebar .cv-lang-bar-fill { background: white; }
   .page.modern .cv-main { flex: 1; padding: 38px 32px; overflow: hidden; }
+
+  /* ---- Bandeau layout ---- */
+  .page.bandeau { padding: 0; overflow: hidden; }
+  .page.bandeau .cv-band {
+    background: var(--tpl-accent, var(--accent)); color: white;
+    padding: 26px 32px 18px; display: flex; align-items: center; gap: 16px;
+  }
+  .page.bandeau .cv-band .cv-name { color: white; }
+  .page.bandeau .cv-band .cv-title { color: rgba(255,255,255,0.85); }
+  .page.bandeau .cv-photo { border-radius: 50%; width: 60px; height: 60px; border: 2px solid rgba(255,255,255,0.6); }
+  .page.bandeau .cv-contact { padding: 10px 32px; background: var(--tpl-accent-soft, var(--accent-soft)); margin: 0; }
+  .page.bandeau .cv-contact-item { background: white; }
+  .page.bandeau .cv-band-body { padding: 22px 32px 32px; }
+
+  /* ---- Minimal layout ---- */
+  .page.minimal .cv-name { font-family: var(--tpl-body-font, 'Inter'), sans-serif; font-weight: 700; }
+  .page.minimal .cv-title { color: #555; }
+  .page.minimal .cv-section-title { color: #1a1a1a; }
+  .page.minimal .cv-section-title::before { background: #1a1a1a; }
+  .page.minimal .cv-entry-sub { color: #444; }
+  .page.minimal .tl-dot { background: #1a1a1a; box-shadow: 0 0 0 3px #ececec; }
+  .page.minimal .cv-contact-item { background: transparent; color: #555; padding: 0; }
+  .page.minimal .cv-skill-tag { background: #f2f2f2; color: #333; }
   .cv-photo {
     width: 76px;
     height: 94px;
@@ -385,6 +415,11 @@
 <div class="workspace">
 
   <div>
+    <div class="panel" style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; padding:16px 22px;">
+      <div style="font-size:0.85rem; color:var(--ink-soft);">✨ Ce CV est pré-rempli avec un exemple pour que vous voyiez le rendu tout de suite. Remplacez simplement les champs par vos informations.</div>
+      <button id="clearFormBtn" style="flex-shrink:0; background:none; border:1px solid var(--line); color:var(--ink-soft); padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:600; cursor:pointer;">🗑️ Vider et repartir de zéro</button>
+    </div>
+
     <div class="panel">
       <h2><span class="step-num">1</span>Personnalisez votre style</h2>
       <p class="sub">Changez tout à la volée, l'aperçu se met à jour instantanément</p>
@@ -398,6 +433,14 @@
         <div class="layout-option" data-layout="modern">
           <div class="layout-thumb modern"><div class="side"></div><div class="main"><div></div><div></div><div></div></div></div>
           <span>Moderne</span>
+        </div>
+        <div class="layout-option" data-layout="minimal">
+          <div class="layout-thumb minimal"><div class="bar"><div></div><div></div><div></div><div></div></div></div>
+          <span>Minimaliste</span>
+        </div>
+        <div class="layout-option" data-layout="bandeau">
+          <div class="layout-thumb bandeau"><div class="band"></div><div class="bar"><div></div><div></div><div></div></div></div>
+          <span>Bandeau</span>
         </div>
       </div>
 
@@ -522,10 +565,65 @@ let selectedFont = "classique";
   const layout = params.get("layout");
   const color = params.get("color");
   const font = params.get("font");
-  if (layout && ["classic", "modern"].includes(layout)) selectedLayout = layout;
+  if (layout && ["classic", "modern", "minimal", "bandeau"].includes(layout)) selectedLayout = layout;
   if (color) selectedColor = color;
   if (font) selectedFont = font;
 })();
+
+// CV exemple pré-rempli : le client voit tout de suite un rendu complet et n'a plus qu'à remplacer par ses infos
+const SAMPLE_CV = {
+  fullName: "Camille Lefèvre",
+  jobTitle: "Assistante commerciale",
+  email: "camille.lefevre@email.com",
+  phone: "06 12 34 56 78",
+  city: "Lyon",
+  summary: "Assistante commerciale organisée et rigoureuse, avec 4 ans d'expérience dans la gestion de la relation client et le suivi des commandes. À l'aise avec les outils CRM, reconnue pour ma capacité à gérer plusieurs priorités simultanément.",
+  experiences: [
+    { role: "Assistante commerciale", company: "Nordis Distribution", dates: "2021 - Présent", description: "Gestion d'un portefeuille de 150 clients professionnels\nSuivi des commandes et relances de paiement\nMise à jour du CRM et reporting mensuel" },
+    { role: "Assistante administrative", company: "Groupe Vallée", dates: "2019 - 2021", description: "Accueil téléphonique et physique\nGestion du courrier et classement des dossiers\nSupport quotidien à l'équipe commerciale" },
+  ],
+  educations: [
+    { degree: "BTS Gestion de la PME", school: "Lycée Saint-Exupéry, Lyon", dates: "2019" },
+  ],
+  skills: "Pack Office, CRM Salesforce, relation client, gestion administrative",
+  languages: [
+    { name: "Anglais", level: "Avancé" },
+    { name: "Espagnol", level: "Intermédiaire" },
+  ],
+};
+
+function fillWithSample() {
+  document.getElementById("fullName").value = SAMPLE_CV.fullName;
+  document.getElementById("jobTitle").value = SAMPLE_CV.jobTitle;
+  document.getElementById("email").value = SAMPLE_CV.email;
+  document.getElementById("phone").value = SAMPLE_CV.phone;
+  document.getElementById("city").value = SAMPLE_CV.city;
+  document.getElementById("summary").value = SAMPLE_CV.summary;
+  document.getElementById("skills").value = SAMPLE_CV.skills;
+  experiences = SAMPLE_CV.experiences.map((e) => ({ ...e }));
+  educations = SAMPLE_CV.educations.map((e) => ({ ...e }));
+  languages = SAMPLE_CV.languages.map((l) => ({ ...l }));
+  renderExperiences();
+  renderEducations();
+  renderLanguages();
+  renderPreview();
+}
+
+function clearForm() {
+  ["fullName", "jobTitle", "email", "phone", "city", "summary", "skills"].forEach((id) => {
+    document.getElementById(id).value = "";
+  });
+  photoDataUrl = null;
+  document.getElementById("photoStatus").textContent = "";
+  document.getElementById("enhancePhotoBtn").style.display = "none";
+  experiences = [{ role: "", company: "", dates: "", description: "" }];
+  educations = [{ degree: "", school: "", dates: "" }];
+  languages = [{ name: "", level: "Avancé" }];
+  renderExperiences();
+  renderEducations();
+  renderLanguages();
+  renderPreview();
+}
 
 function renderStylePickers() {
   const colorRow = document.getElementById("colorRow");
@@ -914,6 +1012,42 @@ function buildModernHTML(cv, contact) {
   return sidebar + main;
 }
 
+function buildMinimalHTML(cv, contact) {
+  let html = `<h1 class="cv-name">${escHtml(cv.fullName) || "Votre nom"}</h1>`;
+  html += `<div class="cv-title">${escHtml(cv.jobTitle) || "Titre du poste visé"}</div>`;
+  html += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
+  html += cv.summary
+    ? `<div class="cv-summary">${escHtml(cv.summary)}</div>`
+    : `<div class="cv-summary cv-empty">Votre résumé apparaîtra ici...</div>`;
+  html += `<div class="cv-section-title">Expérience professionnelle</div>${buildExperiencesHTML(cv)}`;
+  html += `<div class="cv-section-title">Formation</div>${buildEducationsHTML(cv)}`;
+  if (cv.skills) html += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) html += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
+  return html;
+}
+
+function buildBandeauHTML(cv, contact) {
+  let band = `<div class="cv-band">`;
+  if (cv.photoDataUrl) band += `<img class="cv-photo" src="${cv.photoDataUrl}" alt="Photo de profil">`;
+  band += `<div>
+    <h1 class="cv-name">${escHtml(cv.fullName) || "Votre nom"}</h1>
+    <div class="cv-title">${escHtml(cv.jobTitle) || "Titre du poste visé"}</div>
+  </div></div>`;
+  band += `<div class="cv-contact">${buildContactHTML(cv)}</div>`;
+
+  let body = `<div class="cv-band-body">`;
+  body += cv.summary
+    ? `<div class="cv-summary">${escHtml(cv.summary)}</div>`
+    : `<div class="cv-summary cv-empty">Votre résumé apparaîtra ici...</div>`;
+  body += `<div class="cv-section-title">Expérience professionnelle</div>${buildExperiencesHTML(cv)}`;
+  body += `<div class="cv-section-title">Formation</div>${buildEducationsHTML(cv)}`;
+  if (cv.skills) body += `<div class="cv-section-title">Compétences</div><div class="cv-skills">${buildSkillsHTML(cv)}</div>`;
+  if (cv.languages && cv.languages.length) body += `<div class="cv-section-title">Langues</div>${buildLanguagesHTML(cv)}`;
+  body += `</div>`;
+
+  return band + body;
+}
+
 function applyPageStyle(cv) {
   const page = document.getElementById("cvPage");
   const theme = COLOR_THEMES[cv.colorKey] || COLOR_THEMES.forest;
@@ -922,14 +1056,15 @@ function applyPageStyle(cv) {
   page.style.setProperty("--tpl-accent-soft", theme.soft);
   page.style.setProperty("--tpl-display-font", `'${font.display}'`);
   page.style.setProperty("--tpl-body-font", `'${font.body}'`);
-  page.classList.toggle("modern", cv.template === "modern");
+  page.className = "page " + cv.template;
 }
 
 function renderPreview() {
   const cv = getCV();
   const contact = [cv.city, cv.email, cv.phone].filter(Boolean).join("  ·  ");
   applyPageStyle(cv);
-  const html = cv.template === "modern" ? buildModernHTML(cv, contact) : buildClassicHTML(cv, contact);
+  const builders = { modern: buildModernHTML, minimal: buildMinimalHTML, bandeau: buildBandeauHTML };
+  const html = (builders[cv.template] || buildClassicHTML)(cv, contact);
   document.getElementById("cvContent").innerHTML = html;
 }
 
@@ -1007,10 +1142,8 @@ payBtn.addEventListener("click", async () => {
 });
 
 renderStylePickers();
-renderExperiences();
-renderEducations();
-renderLanguages();
-renderPreview();
+fillWithSample();
+document.getElementById("clearFormBtn").addEventListener("click", clearForm);
 </script>
 
 </body>
