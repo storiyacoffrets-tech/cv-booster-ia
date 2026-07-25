@@ -187,7 +187,7 @@
   }
   .cta-panel .price { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 600; }
   .cta-panel .price span { font-size: 0.95rem; color: #c8d3cd; font-weight: 400; }
-  #payBtn {
+  #payBtn, #saveBtn {
     width: 100%;
     margin-top: 12px;
     padding: 15px;
@@ -200,8 +200,8 @@
     cursor: pointer;
     font-family: 'Inter', sans-serif;
   }
-  #payBtn:hover { background: #164a3f; }
-  #payBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+  #payBtn:hover, #saveBtn:hover { background: #164a3f; }
+  #payBtn:disabled, #saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
   #errorBox {
     display: none;
     background: rgba(181, 71, 63, 0.15);
@@ -510,10 +510,12 @@
       <button class="add-btn" id="addLanguage">+ Ajouter une langue</button>
     </div>
 
-    <div class="cta-panel">
-      <div class="price">1,99€ <span>· export PDF haute qualité, sans filigrane</span></div>
+    <div class="cta-panel" id="ctaPanel">
+      <div class="price" id="priceLine">1,99€ <span>· export PDF haute qualité, sans filigrane</span></div>
       <button id="payBtn">Télécharger mon CV en PDF</button>
+      <button id="saveBtn" style="display:none;">💾 Enregistrer les modifications</button>
       <div id="errorBox"></div>
+      <div id="saveSuccessBox" style="display:none; text-align:center; color:#c8d3cd; font-size:0.85rem; margin-top:10px;">✅ Modifications enregistrées</div>
     </div>
   </div>
 
@@ -595,21 +597,37 @@ const SAMPLE_CV = {
   ],
 };
 
-function fillWithSample() {
-  document.getElementById("fullName").value = SAMPLE_CV.fullName;
-  document.getElementById("jobTitle").value = SAMPLE_CV.jobTitle;
-  document.getElementById("email").value = SAMPLE_CV.email;
-  document.getElementById("phone").value = SAMPLE_CV.phone;
-  document.getElementById("city").value = SAMPLE_CV.city;
-  document.getElementById("summary").value = SAMPLE_CV.summary;
-  document.getElementById("skills").value = SAMPLE_CV.skills;
-  experiences = SAMPLE_CV.experiences.map((e) => ({ ...e }));
-  educations = SAMPLE_CV.educations.map((e) => ({ ...e }));
-  languages = SAMPLE_CV.languages.map((l) => ({ ...l }));
+function populateForm(data) {
+  document.getElementById("fullName").value = data.fullName || "";
+  document.getElementById("jobTitle").value = data.jobTitle || "";
+  document.getElementById("email").value = data.email || "";
+  document.getElementById("phone").value = data.phone || "";
+  document.getElementById("city").value = data.city || "";
+  document.getElementById("summary").value = data.summary || "";
+  document.getElementById("skills").value = data.skills || "";
+  photoDataUrl = data.photoDataUrl || null;
+  if (photoDataUrl) {
+    document.getElementById("photoStatus").textContent = "Photo chargée.";
+    document.getElementById("enhancePhotoBtn").style.display = "inline-flex";
+  }
+  experiences = (data.experiences && data.experiences.length ? data.experiences : [{ role: "", company: "", dates: "", description: "" }]).map((e) => ({ ...e }));
+  educations = (data.educations && data.educations.length ? data.educations : [{ degree: "", school: "", dates: "" }]).map((e) => ({ ...e }));
+  languages = (data.languages && data.languages.length ? data.languages : [{ name: "", level: "Avancé" }]).map((l) => ({ ...l }));
+  if (data.template) selectedLayout = data.template;
+  if (data.colorKey) selectedColor = data.colorKey;
+  if (data.fontKey) selectedFont = data.fontKey;
+  document.querySelectorAll(".layout-option").forEach((opt) => {
+    opt.classList.toggle("active", opt.getAttribute("data-layout") === selectedLayout);
+  });
+  renderStylePickers();
   renderExperiences();
   renderEducations();
   renderLanguages();
   renderPreview();
+}
+
+function fillWithSample() {
+  populateForm(SAMPLE_CV);
 }
 
 function clearForm() {
@@ -1125,17 +1143,6 @@ payBtn.addEventListener("click", async () => {
   payBtn.textContent = "Redirection vers le paiement...";
 
   try {
-    // On garde le CV dans le navigateur (pas sur le serveur) : il sera relu
-    // sur la page de succès après paiement. On vérifie que ça a bien
-    // fonctionné AVANT d'envoyer le client vers le paiement, pour ne jamais
-    // facturer quelqu'un sans pouvoir lui donner son CV ensuite.
-    const cvJson = JSON.stringify(cv);
-    localStorage.setItem("cvBoosterPendingCV", cvJson);
-    const verify = localStorage.getItem("cvBoosterPendingCV");
-    if (verify !== cvJson) {
-      throw new Error("Impossible de sauvegarder votre CV dans ce navigateur (stockage local désactivé ou plein). Essayez avec un autre navigateur ou désactivez la navigation privée.");
-    }
-
     const res = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1155,8 +1162,69 @@ payBtn.addEventListener("click", async () => {
   }
 });
 
-renderStylePickers();
-fillWithSample();
+let editingCvId = null;
+
+async function initBuilder() {
+  const params = new URLSearchParams(window.location.search);
+  const cvId = params.get("cvId");
+
+  if (cvId) {
+    try {
+      const res = await fetch(`/api/cv/${cvId}`, { credentials: "include" });
+      const data = await res.json();
+      if (res.ok) {
+        editingCvId = cvId;
+        populateForm(data.cv);
+        document.getElementById("priceLine").style.display = "none";
+        document.getElementById("payBtn").style.display = "none";
+        document.getElementById("saveBtn").style.display = "block";
+        return;
+      }
+    } catch (err) {
+      // silencieux, on retombe sur l'exemple ci-dessous
+    }
+  }
+
+  renderStylePickers();
+  fillWithSample();
+}
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  const cv = getCV();
+  const saveBtn = document.getElementById("saveBtn");
+  const errorBox = document.getElementById("errorBox");
+  const successBox = document.getElementById("saveSuccessBox");
+  errorBox.style.display = "none";
+  successBox.style.display = "none";
+
+  if (!cv.fullName || !cv.jobTitle) {
+    errorBox.textContent = "Merci de renseigner au moins votre nom et le poste visé.";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Enregistrement...";
+  try {
+    const res = await fetch(`/api/cv/${editingCvId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ cv }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Erreur lors de l'enregistrement.");
+    successBox.style.display = "block";
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.style.display = "block";
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "💾 Enregistrer les modifications";
+  }
+});
+
+initBuilder();
 document.getElementById("clearFormBtn").addEventListener("click", clearForm);
 </script>
 
