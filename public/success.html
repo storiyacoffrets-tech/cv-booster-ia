@@ -405,8 +405,28 @@ function renderCV(cv) {
 
 const params = new URLSearchParams(window.location.search);
 const sessionId = params.get("session_id");
+const cvIdParam = params.get("cvId");
 
 async function load() {
+  if (cvIdParam) {
+    // Consultation d'un CV déjà payé, via le compte (pas de nouveau paiement)
+    try {
+      const res = await fetch(`/api/cv/${cvIdParam}`, { credentials: "include" });
+      const data = await res.json();
+      if (!res.ok) {
+        showError(data.error || "CV introuvable ou vous n'êtes pas connecté.");
+        return;
+      }
+      renderCV(data.cv);
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("cvPage").style.display = "block";
+      document.getElementById("actions").style.display = "flex";
+    } catch (err) {
+      showError(err.message);
+    }
+    return;
+  }
+
   if (!sessionId) {
     showError("Session de paiement introuvable.");
     return;
@@ -420,26 +440,28 @@ async function load() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Erreur");
 
-    const stored = localStorage.getItem("cvBoosterPendingCV");
-    let cv = null;
-    if (stored) {
-      cv = JSON.parse(stored);
-    } else if (data.backupCV) {
-      cv = data.backupCV;
-    } else {
+    if (!data.cv) {
       showError("Votre CV n'a pas été retrouvé (paiement bien confirmé). Contactez le support avec cette référence : " + sessionId);
       return;
     }
 
-    renderCV(cv);
+    renderCV(data.cv);
     document.getElementById("loading").style.display = "none";
     document.getElementById("cvPage").style.display = "block";
     document.getElementById("actions").style.display = "flex";
-    localStorage.removeItem("cvBoosterPendingCV");
+
+    if (data.cv.email) {
+      const note = document.createElement("div");
+      note.style.cssText = "text-align:center; font-size:0.82rem; color:var(--ink-soft); margin-top:14px;";
+      note.textContent = "📧 Une copie et votre lien de connexion vous ont été envoyés à " + data.cv.email;
+      document.getElementById("actions").insertAdjacentElement("afterend", note);
+    }
   } catch (err) {
     showError(err.message);
   }
 }
+
+
 
 function showError(msg) {
   document.getElementById("loading").style.display = "none";
